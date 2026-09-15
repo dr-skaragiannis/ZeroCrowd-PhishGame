@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /*.php$
+Disallow: /*.asp$
+Disallow: /*.cgi$
+
+Sitemap: https://dr-skaragiannis.github.io/ZeroCrowd-PhishGame/sitemap.xml
