@@ -78,15 +78,25 @@ No install or build step is required:
 python -m http.server 8000
 ```
 
-Then open `http://localhost:8000` — or simply open `phishgame.html` in a browser.
+Then open `http://localhost:8000` — or simply open `index.html` in a browser.
+
+## Live Site
+
+This repository is published as a **GitHub Pages** site:
+
+**https://dr-skaragiannis.github.io/ZeroCrowd-PhishGame/**
 
 ## Repository Contents
 
 ```
-phishgame.html   # the entire website — markup, styles, and JS, all inline
+index.html       # the entire website — markup, styles, and JS, all inline
 README.md        # this file
 LICENSE.md       # proprietary license — see below
 ```
+
+## GitHub Pages Deployment
+
+The site is served from the root of the `main` branch via GitHub Pages. No build step is required — on every push to `main`, GitHub serves `index.html` as the landing page.
 
 ## License
 
