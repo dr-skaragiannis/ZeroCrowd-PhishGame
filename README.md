@@ -3,7 +3,7 @@
 > **Analyse the message. Recognise the phishing.**
 > A gamified cybersecurity education platform that trains genuine phishing-recognition skills — not merely awareness.
 
-## Live Site:
+## More information on the Live Website:
 **https://dr-skaragiannis.github.io/ZeroCrowd-PhishGame/**
 
 ## Play · Learn · Defend
