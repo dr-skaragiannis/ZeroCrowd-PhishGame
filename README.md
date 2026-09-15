@@ -3,6 +3,12 @@
 > **Analyse the message. Recognise the phishing.**
 > A gamified cybersecurity education platform that trains genuine phishing-recognition skills — not merely awareness.
 
+## Live Site
+
+This repository is published as a **GitHub Pages** site:
+
+**https://dr-skaragiannis.github.io/ZeroCrowd-PhishGame/**
+
 ## Play · Learn · Defend
 
 This repository hosts the official website (a unified, single-HTML document) for ZEROCROWD // PHISHGAME, a web-based training environment for phishing recognition. Users are placed in the role of an analyst: realistic email simulations across **five escalating difficulty tiers**, where you annotate the suspicious elements, justify your assessment, and issue a final judgment — **phishing or legitimate**.
@@ -54,12 +60,6 @@ Rather than merely informing users of the risks, PhishGame places them in the ro
 | Theoretical knowledge | Practical decision-making |
 
 > The best defence isn't merely knowing the risk. It is having practised recognising it.
-
-## Live Site
-
-This repository is published as a **GitHub Pages** site:
-
-**https://dr-skaragiannis.github.io/ZeroCrowd-PhishGame/**
 
 ## License
 
