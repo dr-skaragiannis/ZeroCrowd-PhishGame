@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZEROCROWD // PHISHGAME — Gamified Phishing Recognition Training</title>
+<meta name="description" content="A live phishing simulation training arena. Hand-forged emails, 5 escalating threat tiers, multidimensional scoring, and real-time Deathmatch competition." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --zc-bg: #08080c;
+    --zc-panel: #0d0d14;
+    --zc-amber: #f5a623;
+    --zc-magenta: #ff2bd6;
+    --zc-cyan: #22d3ee;
+    --zc-green: #34d399;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    --sans: "Inter", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--zc-bg);
+    color: #e5e7eb;
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: rgba(245,166,35,.35); color: #fff; }
+
+  .mono { font-family: var(--mono); }
+  .display { font-family: var(--mono); letter-spacing: -.02em; font-weight: 800; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* utility colors */
+  .c-amber { color: var(--zc-amber); }
+  .c-magenta { color: var(--zc-magenta); }
+  .c-cyan { color: var(--zc-cyan); }
+  .c-green { color: var(--zc-green); }
+  .c-white { color: #fff; }
+  .muted { color: #94a3b8; }
+
+  .cyber-grid {
+    background-image:
+      linear-gradient(rgba(34,211,238,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,211,238,.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .cut-corner {
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  }
+  .glow-amber { box-shadow: 0 0 0 1px rgba(245,166,35,.4), 0 0 28px rgba(245,166,35,.15); }
+  .glow-cyan { box-shadow: 0 0 0 1px rgba(34,211,238,.4), 0 0 28px rgba(34,211,238,.15); }
+  .glow-magenta { box-shadow: 0 0 0 1px rgba(255,43,214,.4), 0 0 28px rgba(255,43,214,.15); }
+  .border-soft { border: 1px solid rgba(255,255,255,.1); }
+
+  /* ===== HEADER ===== */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    background: rgba(8,8,12,.85);
+    backdrop-filter: blur(10px);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; max-width: 1200px; margin: 0 auto; }
+  .logo { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-weight: 800; letter-spacing: -.02em; font-size: 15px; }
+  .logo svg { width: 22px; height: 22px; color: var(--zc-cyan); }
+  nav.desktop { display: none; gap: 4px; align-items: center; }
+  nav.desktop a {
+    padding: 8px 12px; font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+    letter-spacing: .18em; color: #94a3b8; transition: color .15s;
+  }
+  nav.desktop a:hover, nav.desktop a.active { color: var(--zc-amber); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none;
+    font-family: var(--mono); font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .18em; padding: 12px 22px; transition: transform .15s;
+  }
+  .btn-amber { background: var(--zc-amber); color: #000; }
+  .btn-amber:hover { transform: translateY(-2px); }
+  .btn-outline { border: 1px solid rgba(34,211,238,.6); color: var(--zc-cyan); background: transparent; }
+  .btn-outline:hover { background: rgba(34,211,238,.1); }
+  .header-cta { display: none; }
+  .menu-btn { display: inline-flex; padding: 8px; border: 1px solid rgba(255,255,255,.15); background: transparent; color: #cbd5e1; cursor: pointer; border-radius: 4px; }
+  .menu-btn svg { width: 20px; height: 20px; }
+  nav.mobile { display: none; flex-direction: column; border-top: 1px solid rgba(255,255,255,.1); background: var(--zc-panel); padding: 12px 24px; }
+  nav.mobile.open { display: flex; }
+  nav.mobile a { padding: 12px 4px; font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .18em; color: #cbd5e1; }
+  nav.mobile a.active { color: var(--zc-amber); }
+
+  @media (min-width: 1024px) {
+    nav.desktop { display: flex; }
+    .header-cta { display: flex; }
+    .menu-btn { display: none; }
+  }
+
+  /* ===== SECTIONS ===== */
+  section { scroll-margin-top: 70px; }
+  .eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .3em; }
+  .eyebrow .line { height: 1px; width: 32px; background: currentColor; opacity: .6; }
+
+  h2.sec { font-family: var(--mono); font-weight: 800; letter-spacing: -.02em; color: #fff; font-size: clamp(26px, 4vw, 40px); margin-top: 16px; line-height: 1.05; }
+
+  .hero { position: relative; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.1); background: var(--zc-bg); }
+  .blob { position: absolute; border-radius: 999px; filter: blur(120px); pointer-events: none; }
+  .hero .b1 { top: -160px; right: 0; width: 500px; height: 500px; background: rgba(255,43,214,.10); }
+  .hero .b2 { bottom: -160px; left: -80px; width: 500px; height: 500px; background: rgba(34,211,238,.10); }
+  .hero-inner { position: relative; padding: 90px 0; }
+  h1.hero-title { font-family: var(--mono); font-weight: 800; letter-spacing: -.04em; color: #fff; line-height: .9; font-size: clamp(44px, 9vw, 96px); }
+
+  .lead { max-width: 640px; margin-top: 28px; font-size: 18px; line-height: 1.6; color: #94a3b8; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 36px; }
+
+  .grid { display: grid; gap: 16px; }
+  .g3 { grid-template-columns: 1fr; }
+  .g2 { grid-template-columns: 1fr; }
+  .g5 { grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(2,1fr);} }
+  @media (min-width: 980px) { .g3 { grid-template-columns: repeat(3,1fr);} .g5 { grid-template-columns: repeat(5,1fr);} }
+
+  .card { background: rgba(13,13,20,.7); padding: 24px; }
+  .card h3 { font-family: var(--mono); font-weight: 700; color: #fff; }
+  .card p { margin-top: 12px; font-size: 14px; line-height: 1.6; color: #94a3b8; }
+
+  .stats { border-bottom: 1px solid rgba(255,255,255,.1); background: var(--zc-panel); }
+  .stats-inner { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px 0; padding: 48px 0; text-align: center; }
+  @media (min-width: 768px) { .stats-inner { grid-template-columns: repeat(6,1fr); } }
+  .stat-num { font-family: var(--mono); font-weight: 800; font-size: 40px; color: var(--zc-amber); }
+  .stat-lbl { margin-top: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .18em; color: #64748b; }
+
+  /* light sections */
+  .light { background: #f1f5f9; color: #0f172a; }
+  .light h2 { color: #0f172a; }
+  .light .eyebrow { color: #ea580c; }
+  .light .lightcard { background: #fff; border: 1px solid #cbd5e1; border-radius: 16px; padding: 32px; box-shadow: 0 20px 40px -20px rgba(0,0,0,.25); }
+  .light p.big { font-size: 18px; line-height: 1.6; color: #475569; margin-top: 20px; }
+
+  .pad { padding: 80px 0; }
+
+  /* table */
+  .cmp { overflow: hidden; border-radius: 8px; border: 1px solid rgba(255,255,255,.1); margin-top: 40px; }
+  .cmp .row { display: grid; grid-template-columns: 1fr 1fr; }
+  .cmp .head { background: var(--zc-panel); font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .18em; }
+  .cmp .head .l { color: #64748b; } .cmp .head .r { color: var(--zc-amber); }
+  .cmp .cell { padding: 16px 20px; font-size: 14px; }
+  .cmp .cell.l { border-right: 1px solid rgba(255,255,255,.1); color: #94a3b8; }
+  .cmp .cell.r { color: #fff; }
+  .cmp .row.odd { background: rgba(13,13,20,.4); } .cmp .row.even { background: var(--zc-bg); }
+
+  .signal { display: grid; gap: 8px; border: 1px solid rgba(255,255,255,.1); background: rgba(13,13,20,.5); padding: 20px; border-radius: 8px; }
+  @media (min-width: 768px) { .signal { grid-template-columns: 180px 1fr; gap: 24px; } }
+  .signal .name { font-family: var(--mono); font-weight: 700; font-size: 18px; color: var(--zc-cyan); }
+  .signal .rule { font-size: 14px; color: #cbd5e1; }
+
+  .chip { display: inline-block; border-radius: 4px; padding: 4px 12px; font-family: var(--mono); font-size: 13px; }
+  .chip-amber { border: 1px solid rgba(245,166,35,.4); background: rgba(245,166,35,.1); color: var(--zc-amber); }
+  .chip-cyan { border: 1px solid rgba(34,211,238,.4); background: rgba(34,211,238,.1); color: var(--zc-cyan); }
+
+  code.k { font-family: var(--mono); font-weight: 700; }
+
+  .levels { display: flex; flex-direction: column; gap: 12px; margin-top: 40px; }
+  @media (min-width: 768px) { .levels { flex-direction: row; } }
+  .level { flex: 1; display: flex; align-items: center; gap: 16px; border: 1px solid #cbd5e1; background: #fff; border-radius: 12px; padding: 20px; }
+  @media (min-width: 768px) { .level { flex-direction: column; align-items: flex-start; } }
+  .level .idx { font-family: var(--mono); font-weight: 800; font-size: 26px; color: #cbd5e1; }
+  .level .nm { font-family: var(--mono); font-weight: 700; font-size: 18px; color: #0f172a; }
+  .level .xp { font-size: 14px; font-weight: 600; color: #4f46e5; }
+
+  .achv { display: flex; gap: 12px; align-items: flex-start; border: 1px solid rgba(255,255,255,.1); background: rgba(8,8,12,.6); padding: 16px; border-radius: 8px; }
+  .achv .star { color: var(--zc-amber); margin-top: 2px; }
+
+  .radar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+  .radar-cell { border: 1px solid #e2e8f0; background: #f8fafc; padding: 12px; text-align: center; border-radius: 8px; font-family: var(--mono); font-weight: 700; font-size: 14px; color: #1e293b; }
+
+  .note { border: 1px solid rgba(255,43,214,.3); background: rgba(255,43,214,.05); padding: 24px; border-radius: 8px; margin-top: 24px; font-size: 14px; line-height: 1.6; color: #cbd5e1; }
+
+  /* form */
+  .form-grid { display: grid; gap: 48px; }
+  @media (min-width: 1024px) { .form-grid { grid-template-columns: 1fr 1.2fr; } }
+  .field label { display: block; margin-bottom: 8px; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .18em; color: #94a3b8; }
+  .field input, .field select, .field textarea {
+    width: 100%; border-radius: 4px; border: 1px solid rgba(255,255,255,.15); background: rgba(8,8,12,.7);
+    padding: 12px 16px; font-size: 14px; color: #fff; font-family: var(--sans); outline: none; transition: border-color .15s, box-shadow .15s;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: #64748b; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--zc-cyan); box-shadow: 0 0 0 1px rgba(34,211,238,.4), 0 0 20px rgba(34,211,238,.15); }
+  .form-2 { display: grid; gap: 20px; }
+  @media (min-width: 640px) { .form-2 { grid-template-columns: 1fr 1fr; } }
+  .form-err { margin-top: 16px; border: 1px solid rgba(255,43,214,.4); background: rgba(255,43,214,.1); padding: 12px 16px; border-radius: 4px; font-size: 14px; color: var(--zc-magenta); }
+  .form-ok { text-align: center; padding: 40px; }
+  .highlight { display: flex; gap: 12px; }
+  .highlight .arw { color: var(--zc-amber); margin-top: 2px; }
+  .highlight .t { font-family: var(--mono); font-weight: 700; font-size: 14px; color: #fff; }
+
+  footer { border-top: 1px solid rgba(255,255,255,.1); background: var(--zc-panel); }
+  .foot-grid { display: grid; gap: 40px; padding: 48px 0; }
+  @media (min-width: 768px) { .foot-grid { grid-template-columns: 2fr 1fr 1fr; } }
+  .foot h4 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .18em; color: #64748b; }
+  .foot ul { list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .foot ul a { font-size: 14px; color: #94a3b8; } .foot ul a:hover { color: #fff; }
+  .foot-bottom { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(255,255,255,.1); padding: 24px 0; font-size: 12px; color: #64748b; }
+  @media (min-width: 640px) { .foot-bottom { flex-direction: row; align-items: center; justify-content: space-between; } }
+
+  .hidden { display: none !important; }
+  .relative { position: relative; }
+  .center { text-align: center; }
+  .divider-top { border-top: 1px solid rgba(255,255,255,.1); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="nav-inner">
+    <a href="#home" class="logo" onclick="closeMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z"/></svg>
+      <span class="c-white">ZEROCROWD</span><span class="c-amber">//</span><span class="c-magenta">PHISHGAME</span>
+    </a>
+    <nav class="desktop" id="deskNav">
+      <a href="#how">How It Works</a>
+      <a href="#features">Features</a>
+      <a href="#arena">Arena</a>
+      <a href="#educators">Educators</a>
+      <a href="#applications">Applications</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-cta"><a href="#contact" class="btn btn-amber cut-corner">Request Demo</a></div>
+    <button class="menu-btn" onclick="toggleMenu()" aria-label="Toggle menu">
+      <svg id="menuIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="mobile" id="mobNav">
+    <a href="#how" onclick="closeMenu()">How It Works</a>
+    <a href="#features" onclick="closeMenu()">Features</a>
+    <a href="#arena" onclick="closeMenu()">Arena</a>
+    <a href="#educators" onclick="closeMenu()">Educators</a>
+    <a href="#applications" onclick="closeMenu()">Applications</a>
+    <a href="#contact" onclick="closeMenu()">Contact</a>
+    <a href="#contact" class="btn btn-amber cut-corner" style="margin-top:8px;justify-content:center" onclick="closeMenu()">Request Demo</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section id="home" class="hero cyber-grid">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="wrap hero-inner">
+    <div class="eyebrow c-cyan"><span class="line"></span>ZEROCROWD // PHISHGAME</div>
+    <h1 class="hero-title" style="margin-top:24px">DECODE THE INBOX.<br>CATCH THE <span class="c-magenta">PHISH.</span></h1>
+    <p class="lead">A live phishing simulation training arena. Hand-forged emails, 5 escalating threat tiers. Point-and-click the suspicious indicators, explain your reasoning, level up. Your call: <span class="c-magenta">PHISHING</span> or <span class="c-green">LEGIT</span>.</p>
+    <div class="cta-row">
+      <a href="#contact" class="btn btn-amber cut-corner">⊕ Request Demo</a>
+      <a href="#how" class="btn btn-outline cut-corner">⚙ How It Works</a>
+    </div>
+    <div class="grid g3" style="margin-top:64px">
+      <div class="card cut-corner border-soft"><div style="font-size:24px" class="c-magenta">◎</div><h3 style="margin-top:16px;font-size:18px">POINT &amp; CLICK</h3><p>Tag suspicious tokens directly on the email body. Highlight the sender, subject, or link and classify each as safe or malicious. Wrong picks cost you.</p></div>
+      <div class="card cut-corner border-soft"><div style="font-size:24px" class="c-amber">⚡</div><h3 style="margin-top:16px;font-size:18px">AI-GRADED REASONING</h3><p>An educator-configured grader (AI/LLM or deterministic algorithm) scores your free-text justification. Quality of thinking matters, not just the final call.</p></div>
+      <div class="card cut-corner border-soft"><div style="font-size:24px" class="c-cyan">🏆</div><h3 style="margin-top:16px;font-size:18px">BADGES &amp; LEADERBOARD</h3><p>First Blood, Indicator Sniper, Streak Master, Combo King. Nine achievements and a global top-50 leaderboard. Rank up across 5 escalating tiers.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats"><div class="wrap"><div class="stats-inner">
+  <div><div class="stat-num">5</div><div class="stat-lbl">Scoring dimensions</div></div>
+  <div><div class="stat-num">5</div><div class="stat-lbl">Difficulty tiers</div></div>
+  <div><div class="stat-num">6</div><div class="stat-lbl">Indicator categories</div></div>
+  <div><div class="stat-num">9</div><div class="stat-lbl">Achievements</div></div>
+  <div><div class="stat-num">3</div><div class="stat-lbl">Arena modes</div></div>
+  <div><div class="stat-num">7</div><div class="stat-lbl">Educator sections</div></div>
+</div></div></section>
+
+<!-- PROBLEM (light) -->
+<section class="light"><div class="wrap pad">
+  <div class="grid g2" style="align-items:center;gap:48px">
+    <div>
+      <div class="eyebrow"><span class="line"></span>The Problem</div>
+      <h2 class="sec">Human decision-making is the critical layer of cybersecurity.</h2>
+      <p class="big">Even with email filtering, endpoint protection, firewalls, and detection systems, the user remains a critical decision point. Phishing exploits the everyday dependence on electronic communication — every link, attachment, and request demands an immediate judgment.</p>
+      <p class="big">Traditional training relies on presentations and static quizzes. They transmit knowledge — but do not ensure a user can <strong>apply</strong> it against a real suspicious message.</p>
+    </div>
+    <div class="lightcard">
+      <p class="mono" style="text-transform:uppercase;letter-spacing:.18em;font-size:13px;color:#ea580c">The core principle</p>
+      <p style="margin-top:16px;font-size:24px;font-weight:700;line-height:1.3;color:#0f172a">“Awareness should be transformed into a repeatedly practiced skill.”</p>
+      <p style="margin-top:24px;color:#475569">Rather than simply informing users about phishing risks, PhishGame places them in the role of an analyst: examine realistic emails, identify critical elements, justify the decision, and take responsibility for the final call.</p>
+      <a href="#how" class="mono" style="display:inline-block;margin-top:32px;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.18em;color:#ea580c">See the methodology →</a>
+    </div>
+  </div>
+</div></section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="divider-top"><div class="wrap pad">
+  <div class="eyebrow c-magenta"><span class="line"></span>The Core Experience — Inbox Mission</div>
+  <h2 class="sec">Five stages of every round</h2>
+  <div class="grid g5" style="margin-top:40px">
+    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">01</div><h3 style="margin-top:16px;font-size:16px">Examine the email</h3><p>The system selects a message matched to your level and language. Read the sender, subject, and body carefully.</p></div>
+    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">02</div><h3 style="margin-top:16px;font-size:16px">Highlight indicators</h3><p>Select any part of the sender, subject, or body. A popover offers Safe or Malicious. Each annotation is stored as a structured note.</p></div>
+    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">03</div><h3 style="margin-top:16px;font-size:16px">Justify your reasoning</h3><p>Write a free-text justification, graded by an LLM or deterministic algorithm on concept coverage and indicator alignment.</p></div>
+    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">04</div><h3 style="margin-top:16px;font-size:16px">Set your confidence</h3><p>Low (×0.5), Medium (×1.0), or High (×1.5). The multiplier applies to the decision — affecting gains and losses.</p></div>
+    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">05</div><h3 style="margin-top:16px;font-size:16px">Make the call</h3><p>Choose Phishing or Legitimate. Get immediate feedback: correct indicators, missed ones, and incorrect annotations.</p></div>
+  </div>
+</div></section>
+
+<!-- ADAPTIVE (light) -->
+<section class="light"><div class="wrap pad">
+  <div class="eyebrow" style="color:#4f46e5"><span class="line"></span>Adaptive Difficulty</div>
+  <h2 class="sec">A five-level progression system</h2>
+  <p class="big" style="max-width:680px">Email difficulty adapts to your level. Early levels contain more obvious indicators; higher levels introduce complex messages combining genuine and deceptive characteristics — training you to evaluate subtle, conflicting signals.</p>
+  <div class="levels">
+    <div class="level"><span class="idx">1</span><div><div class="nm">Beginner</div><div class="xp">0 XP</div></div></div>
+    <div class="level"><span class="idx">2</span><div><div class="nm">Apprentice</div><div class="xp">300 XP</div></div></div>
+    <div class="level"><span class="idx">3</span><div><div class="nm">Analyst</div><div class="xp">800 XP</div></div></div>
+    <div class="level"><span class="idx">4</span><div><div class="nm">Expert</div><div class="xp">1600 XP</div></div></div>
+    <div class="level"><span class="idx">5</span><div><div class="nm">Master</div><div class="xp">3000+ XP</div></div></div>
+  </div>
+</div></section>
+
+<!-- SCORING -->
+<section class="divider-top"><div class="wrap pad">
+  <div class="eyebrow c-amber"><span class="line"></span>Scoring Engine</div>
+  <h2 class="sec">Five independent signals</h2>
+  <p class="lead" style="margin-top:16px">Performance isn't limited to right-or-wrong. It's derived from a multidimensional engine that rewards the whole decision-making process.</p>
+  <div style="display:flex;flex-direction:column;gap:12px;margin-top:40px">
+    <div class="signal"><div class="name">Decision</div><div class="rule">Correct phishing: +100 · Correct legitimate: +100 · False positive: −60 · False negative: −120.</div></div>
+    <div class="signal"><div class="name">Indicators</div><div class="rule">Correctly identified and classified indicators rewarded by weight. Misclassifications and omissions incur penalties.</div></div>
+    <div class="signal"><div class="name">Time</div><div class="rule">Correct under 10s: +30 · Under 25s: +15 · Incorrect very fast decision: −20.</div></div>
+    <div class="signal"><div class="name">Reasoning</div><div class="rule">S_R = 30R − 20(1−R), where R ∈ [0,1]. Range from −20 to +30.</div></div>
+    <div class="signal"><div class="name">Bonus</div><div class="rule">+25 when all malicious indicators identified and classified, no incorrect annotations, and a correct final judgment.</div></div>
+  </div>
+  <div class="grid g2" style="margin-top:48px">
+    <div class="card cut-corner glow-magenta"><h3 style="font-size:24px">Evidence Gate</h3><p style="color:#cbd5e1">A correct final judgment alone isn't enough for a full score. You must provide at least one correctly identified piece of evidence, or achieve a reasoning score ≥ 0.5.</p><p>Without sufficient evidence, a correct decision is capped from 100 to 40 points. Penalties for incorrect decisions are not capped. This discourages simply guessing.</p></div>
+    <div class="card cut-corner glow-amber"><h3 style="font-size:24px">Combo Multiplier</h3><p style="color:#cbd5e1">Consecutive correct, evidence-supported answers build a combo:</p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px"><span class="chip chip-amber">1 ×1.0</span><span class="chip chip-amber">2 ×1.25</span><span class="chip chip-amber">3 ×1.5</span><span class="chip chip-amber">4 ×1.75</span><span class="chip chip-amber">5+ ×2.0</span></div><p>An incorrect answer resets the combo. Anti-abuse: selections over 160 chars / 24 words are ignored, and total reward is bounded at −250.</p></div>
+  </div>
+</div></section>
+
+<!-- FEATURES -->
+<section id="features" class="divider-top"><div class="wrap pad">
+  <div class="eyebrow c-cyan"><span class="line"></span>Educational Indicators</div>
+  <h2 class="sec">Six phishing indicator categories</h2>
+  <div class="grid g3" style="margin-top:40px">
+    <div class="card cut-corner border-soft"><code class="k c-magenta">fake_domain</code><p>Fake and lookalike domains, character substitutions, and deceptive addresses.</p></div>
+    <div class="card cut-corner border-soft"><code class="k c-amber">credential_request</code><p>Requests for passwords, PINs, card numbers, and other secrets.</p></div>
+    <div class="card cut-corner border-soft"><code class="k c-cyan">suspicious_link</code><p>Real URL inspection, hover behavior, URL mismatch, and naked IP addresses.</p></div>
+    <div class="card cut-corner border-soft"><code class="k c-magenta">urgency</code><p>Artificial urgency and pressure to take immediate action.</p></div>
+    <div class="card cut-corner border-soft"><code class="k c-amber">attachment_risk</code><p>Suspicious .zip, .exe, .html, macros, and other attachments.</p></div>
+    <div class="card cut-corner border-soft"><code class="k c-cyan">minor_hint</code><p>Greetings, spelling, signatures, and other secondary indicators.</p></div>
+  </div>
+  <p class="lead" style="margin-top:32px">Your performance across these categories generates <span class="c-amber">EduTips</span> — three short bilingual cards. The weakest category appears first as “Your Focus,” with two more low-performing categories completing your recommended training.</p>
+
+  <div style="margin-top:64px" class="eyebrow c-amber"><span class="line"></span>Achievements &amp; Motivation</div>
+  <h2 class="sec">Nine core achievements</h2>
+  <div class="grid g3" style="margin-top:40px">
+    <div class="achv"><span class="star">★</span><div><code class="k c-white">first_blood</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">First correct phishing identification</p></div></div>
+    <div class="achv"><span class="star">★</span><div><code class="k c-white">perfect_catch</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">High score with complete indicator ID</p></div></div>
+    <div class="achv"><span class="star">★</span><div><code class="k c-white">fast_hand</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Correct decision in under 10 seconds</p></div></div>
+    <div class="achv"><span class="star">★</span><div><code class="k c-white">streak_master</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Five consecutive correct decisions</p></div></div>
+    <div class="achv"><span class="star">★</span><div><code class="k c-white">indicator_sniper</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Precision indicator hunting</p></div></div>
+    <div class="achv"><span class="star">★</span><div><code class="k c-white">phisher_tracker</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Ten correct phishing identifications</p></div></div>
+    <div class="achv"><span class="star">★</span><div><code class="k c-white">level_master</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Reach the fifth level</p></div></div>
+    <div class="achv"><span class="star">★</span><div><code class="k c-white">no_false_positive</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Clean run without false alarms</p></div></div>
+    <div class="achv"><span class="star">★</span><div><code class="k c-white">combo_king</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Build a combo of at least five</p></div></div>
+  </div>
+</div></section>
+
+<!-- COMMAND DECK (light) -->
+<section class="light"><div class="wrap pad">
+  <div class="grid g2" style="align-items:center;gap:48px">
+    <div>
+      <div class="eyebrow" style="color:#4f46e5"><span class="line"></span>Command Deck</div>
+      <h2 class="sec">Your central control dashboard</h2>
+      <p class="big">Six KPI cards — XP, level, accuracy, best streak, average time, and achievements. Track the speed-versus-reward relationship, accuracy over time, accuracy by level, and the phishing vs. legitimate distribution. The live leaderboard refreshes every seven seconds.</p>
+      <p class="big">Each user has a personal profile with an avatar (20 DiceBear Bottts options or a custom 400×400), biography, and statistics.</p>
+    </div>
+    <div class="lightcard">
+      <p class="mono" style="text-transform:uppercase;letter-spacing:.18em;font-size:13px;color:#4f46e5">Awareness Radar — 6 axes</p>
+      <div class="radar-grid">
+        <div class="radar-cell">Detection</div><div class="radar-cell">Examination</div>
+        <div class="radar-cell">Speed</div><div class="radar-cell">Attention</div>
+        <div class="radar-cell">Reasoning</div><div class="radar-cell">Resilience</div>
+      </div>
+      <p style="margin-top:24px;font-size:14px;color:#64748b">A six-axis profile visualizing where your human detection layer is strongest — and where to focus next.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- COMMS + SPEEDBOARD -->
+<section class="divider-top"><div class="wrap pad">
+  <div class="grid g3">
+    <div class="card cut-corner glow-cyan" style="grid-column:span 1"><h3 style="font-size:24px">COMMS HUD</h3><p style="color:#cbd5e1">A live notification and educational communication system: activity events, achievements, level-ups, first-place changes, speed records, instructor messages, automatic hints, score pulses, and challenge notifications.</p><p>Instructors broadcast to the whole group or individuals — info, warning, or critical.</p></div>
+    <div class="card cut-corner glow-amber"><h3 style="font-size:24px">SpeedBoard</h3><p style="color:#cbd5e1">After each round, the five fastest correct identifications for that specific email are shown.</p><p>The <code class="k c-cyan">/records</code> page offers a full history: level, subject, participant count, record holder, and your best time. The global leaderboard ranks the top 50 by XP.</p></div>
+    <div class="card cut-corner border-soft"><h3 style="font-size:24px">Sound Engine</h3><p style="color:#cbd5e1">Full Web Audio API composition — deep bass drone, LFO-swept filtering, noise pad, and pentatonic arpeggio.</p><p>Dedicated effects for click, select, submit, success, error, badge, and level-up. Off by default, stored in localStorage.</p></div>
+  </div>
+</div></section>
+
+<!-- ARENA -->
+<section id="arena" class="divider-top"><div class="wrap pad">
+  <div class="eyebrow c-magenta"><span class="line"></span>Competitive Real-Time Training</div>
+  <h2 class="sec">Enter the Deathmatch Arena</h2>
+  <p class="lead" style="margin-top:16px">Transform a training session into a shared, competitive phishing-analysis activity. Only one Arena is active at a time — activating a new round auto-terminates the previous one and publishes its results.</p>
+  <div class="grid g3" style="margin-top:40px">
+    <div class="card cut-corner glow-magenta"><h3 style="font-size:22px">Deathmatch</h3><p style="color:#cbd5e1">The instructor selects a difficulty (or any level) and language. The server picks one email — everyone sees exactly the same message simultaneously. Objective comparison: same problem, different strategies.</p></div>
+    <div class="card cut-corner glow-amber"><h3 style="font-size:22px">Blitz</h3><p style="color:#cbd5e1">Participants work independently within a time window. After each submission, the next email auto-loads after 2.5s. Each email is attempted once. Emphasis on speed and consistency.</p></div>
+    <div class="card cut-corner glow-cyan"><h3 style="font-size:22px">Custom</h3><p style="color:#cbd5e1">Mechanically like Deathmatch, but the instructor picks the exact email — ideal for connecting the Arena to a specific lesson or incident presented earlier.</p></div>
+  </div>
+  <div class="grid g2" style="margin-top:48px;gap:48px">
+    <div>
+      <div class="eyebrow c-cyan"><span class="line"></span>Arena Duration</div>
+      <h2 class="sec" style="font-size:26px">A timer for every rhythm</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:24px">
+        <span class="chip chip-cyan">30s</span><span class="chip chip-cyan">1 min</span><span class="chip chip-cyan">2 min</span><span class="chip chip-cyan">5 min</span><span class="chip chip-cyan">15s – 60 min custom</span>
+      </div>
+      <p style="margin-top:24px;font-size:14px;color:#94a3b8;line-height:1.6">The timer stays visible, changing color as time runs low — the final 10 seconds trigger a strong warning.</p>
+    </div>
+    <div>
+      <div class="eyebrow c-magenta"><span class="line"></span>Participation</div>
+      <h2 class="sec" style="font-size:26px">Mandatory or optional</h2>
+      <div style="margin-top:24px;display:flex;flex-direction:column;gap:16px">
+        <div class="card border-soft" style="padding:20px"><div class="mono" style="font-weight:700;font-size:14px;color:var(--zc-magenta)">Mandatory</div><p style="margin-top:8px">The Arena overlay appears automatically when the round starts — ideal for organized sessions.</p></div>
+        <div class="card border-soft" style="padding:20px"><div class="mono" style="font-weight:700;font-size:14px;color:var(--zc-amber)">Optional</div><p style="margin-top:8px">A banner offers “Join Deathmatch” or “Not Now.” Declining applies only to that round.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="note"><span class="mono" style="font-weight:700;color:var(--zc-magenta)">Same engine, no shortcuts.</span> The Arena uses exactly the same scoring engine as solo play. No special multipliers. Evidence Gate, confidence multiplier, combo multiplier, indicator scoring, time bonus, reasoning score, and anti-abuse all apply identically — so skills built in practice transfer directly to competition.</div>
+</div></section>
+
+<!-- WINNING (light) -->
+<section class="light"><div class="wrap pad">
+  <div class="eyebrow"><span class="line"></span>Winning Conditions</div>
+  <h2 class="sec">Three ways to claim victory</h2>
+  <div class="grid g3" style="margin-top:40px">
+    <div class="lightcard" style="padding:24px"><h3 class="mono" style="font-weight:700;font-size:18px;color:#0f172a">Fastest Catch</h3><p style="margin-top:12px;font-size:14px;color:#475569">The first player to submit a correct judgment wins. Ties broken by highest score.</p></div>
+    <div class="lightcard" style="padding:24px"><h3 class="mono" style="font-weight:700;font-size:18px;color:#0f172a">Highest Score</h3><p style="margin-top:12px;font-size:14px;color:#475569">The player with the highest overall score wins. Ties broken by fastest time.</p></div>
+    <div class="lightcard" style="padding:24px"><h3 class="mono" style="font-weight:700;font-size:18px;color:#0f172a">Fastest After Score</h3><p style="margin-top:12px;font-size:14px;color:#475569">Priority to the first correct player; with no correct catch, ranking falls back to score.</p></div>
+  </div>
+  <p class="big" style="max-width:720px">When no participant satisfies the winning condition, the platform <strong>doesn't invent a winner</strong> — it displays a message that there was no correct identification in that round.</p>
+</div></section>
+
+<!-- EDUCATORS -->
+<section id="educators" class="divider-top"><div class="wrap pad">
+  <div class="eyebrow c-green"><span class="line"></span>Educator Control Room</div>
+  <h2 class="sec">Seven sections — everything an instructor needs</h2>
+  <div class="grid g3" style="margin-top:40px">
+    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">01</span><h3 style="font-size:18px">Overview</h3></div><p>Players, corpus size, attempts, success rate, radial gauges, donut charts, level distributions, rolling accuracy, and live activity.</p></div>
+    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">02</span><h3 style="font-size:18px">Players</h3></div><p>Per-user detection accuracy, average decision time, false-positive/negative rates, best streak, and performance at levels 4–5.</p></div>
+    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">03</span><h3 style="font-size:18px">Logs</h3></div><p>Up to 400 records, filterable by user, outcome, and email type. Expand for full scoring breakdown, snippets, and reasoning. CSV export.</p></div>
+    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">04</span><h3 style="font-size:18px">Analytics</h3></div><p>Group Awareness Profile, performance by level, decision-time histograms, rolling accuracy, and indicator capture rates.</p></div>
+    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">05</span><h3 style="font-size:18px">Comms</h3></div><p>Broadcast to the group or individuals — info, warning, or critical. Drive challenges, countdowns, and results.</p></div>
+    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">06</span><h3 style="font-size:18px">Corpus</h3></div><p>Create, import, export, and manage training emails and their indicators. Ships with 16+ handcrafted emails (Greek &amp; English).</p></div>
+    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">07</span><h3 style="font-size:18px">Config</h3></div><p>Choose AI/LLM or deterministic grading. Set provider, model, base URL, and API key (OpenRouter, Ollama, OpenAI-compatible). Run a connection test.</p></div>
+  </div>
+  <div class="grid g2" style="margin-top:48px">
+    <div class="card cut-corner glow-cyan"><h3 style="font-size:24px">Analytics</h3><p style="color:#cbd5e1">Rolling accuracy tracks the last 50 attempts with a window of 10. Indicator capture rates reveal which categories are hardest to recognize.</p><p>Identify patterns — e.g. users who spot attachments easily but miss lookalike domains — then design targeted interventions and measure improvement.</p></div>
+    <div class="card cut-corner glow-amber"><h3 style="font-size:24px">Platform Security</h3><p style="color:#cbd5e1">Role separation between Player and Educator. JWT auth; passwords stored with bcrypt. The educator account is predefined — not open registration.</p><p>LLM provider API keys stay on the server, never exposed to the frontend.</p></div>
+  </div>
+</div></section>
+
+<!-- APPLICATIONS -->
+<section id="applications" class="divider-top"><div class="wrap pad">
+  <div class="eyebrow c-amber"><span class="line"></span>Applications</div>
+  <h2 class="sec">Built for the environments that get targeted</h2>
+  <div class="grid g3" style="margin-top:40px">
+    <div class="card cut-corner glow-magenta"><h3 style="font-size:20px">Journalism &amp; News Media</h3><p style="color:#cbd5e1">Emails from sources, colleagues, agencies, organizations, or event organizers. Simulate interview invitations, document deliveries, press releases, cloud-sharing notifications, and suspicious attachments.</p><p style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;font-style:italic">Not to memorize rules — but to critically evaluate communication that initially appears trustworthy.</p></div>
+    <div class="card cut-corner glow-amber"><h3 style="font-size:20px">Office Professionals</h3><p style="color:#cbd5e1">Adapt the corpus to HR, accounting, suppliers, management, Microsoft 365, Google Workspace, invoices, video conferences, bank-detail changes, and supervisor requests.</p><p style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;font-style:italic">Especially important for Business Email Compromise and social engineering.</p></div>
+    <div class="card cut-corner glow-cyan"><h3 style="font-size:20px">Education (Ages 12–18)</h3><p style="color:#cbd5e1">Supports students, cybersecurity clubs, and formal or non-formal programs. Inbox Mission for individual practice, then a Deathmatch Arena for group activity.</p><p style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;font-style:italic">Combines individual learning, feedback, competition, and performance analysis.</p></div>
+  </div>
+</div></section>
+
+<!-- AWARENESS TO RESILIENCE (light) -->
+<section class="light"><div class="wrap pad center" style="max-width:800px;margin:0 auto">
+  <div class="eyebrow" style="justify-content:center"><span class="line"></span>From Awareness to Resilience<span class="line"></span></div>
+  <h2 class="sec">Not a one-time campaign — a continuous capability.</h2>
+  <p class="big" style="margin-left:auto;margin-right:auto">Systematic recording of results lets organizations identify patterns: perhaps users spot suspicious attachments easily but struggle with lookalike domains, or decide too quickly under a sense of urgency. That data drives targeted interventions and measures improvement.</p>
+  <p style="margin-top:24px;font-size:20px;font-weight:700;color:#0f172a">The user is asked to examine a message, identify evidence, assess its reliability, justify the decision, and take responsibility for the final judgment.</p>
+</div></section>
+
+<!-- CONTACT -->
+<section id="contact" class="divider-top"><div class="wrap pad">
+  <div class="eyebrow c-amber"><span class="line"></span>Request a Demo</div>
+  <h2 class="sec">Strengthen the <span class="c-amber">human layer.</span></h2>
+  <p class="lead" style="margin-top:16px">Tell us about your team and we'll tailor a corpus, schedule a walkthrough, and show how PhishGame turns awareness into a practiced skill.</p>
+  <div class="form-grid" style="margin-top:48px">
+    <div>
+      <div class="eyebrow c-cyan"><span class="line"></span>Why teams choose PhishGame</div>
+      <h2 class="sec" style="font-size:24px">A practical training layer between technology and the human.</h2>
+      <div style="margin-top:32px;display:flex;flex-direction:column;gap:16px">
+        <div class="highlight"><span class="arw">▸</span><div><div class="t">Bilingual</div><p style="margin:0;font-size:14px;color:#94a3b8">Full Greek and English support out of the box.</p></div></div>
+        <div class="highlight"><span class="arw">▸</span><div><div class="t">Deployable</div><p style="margin:0;font-size:14px;color:#94a3b8">Adaptable to your user management, retention, and privacy needs.</p></div></div>
+        <div class="highlight"><span class="arw">▸</span><div><div class="t">Measurable</div><p style="margin:0;font-size:14px;color:#94a3b8">Detailed dashboards, CSV/JSON export, and rolling analytics.</p></div></div>
+        <div class="highlight"><span class="arw">▸</span><div><div class="t">Responsive</div><p style="margin:0;font-size:14px;color:#94a3b8">Works from 390px mobile up to desktop, with off-canvas nav.</p></div></div>
+      </div>
+      <div style="margin-top:40px;border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.05);padding:20px;border-radius:8px">
+        <p class="mono c-cyan" style="text-transform:uppercase;letter-spacing:.18em;font-size:13px">Practice the decision</p>
+        <p style="margin-top:8px;font-size:14px;color:#cbd5e1">The best defense against phishing isn't only knowing the risk. It's having practiced recognizing it.</p>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div>
+      <form id="demoForm" class="cut-corner border-soft" style="background:rgba(13,13,20,.7);padding:32px" novalidate>
+        <div class="form-2">
+          <div class="field"><label for="name">Name *</label><input id="name" name="name" required maxlength="200" placeholder="Jane Analyst" /></div>
+          <div class="field"><label for="email">Email *</label><input id="email" name="email" type="email" required placeholder="jane@newsroom.org" /></div>
+        </div>
+        <div class="form-2" style="margin-top:20px">
+          <div class="field"><label for="organization">Organization</label><input id="organization" name="organization" maxlength="200" placeholder="Your team or company" /></div>
+          <div class="field"><label for="useCase">Use Case *</label>
+            <select id="useCase" name="useCase" required>
+              <option value="" disabled selected>Select…</option>
+              <option>Journalism &amp; News Media</option>
+              <option>Office / Corporate Team</option>
+              <option>Education (Ages 12–18)</option>
+              <option>University / Research</option>
+              <option>Cybersecurity Club</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" style="margin-top:20px"><label for="message">Tell us about your threat landscape</label><textarea id="message" name="message" rows="4" maxlength="4000" placeholder="What kinds of phishing scenarios does your team face?"></textarea></div>
+        <div id="formErr" class="form-err hidden"></div>
+        <button type="submit" id="submitBtn" class="btn btn-amber cut-corner" style="margin-top:24px;width:100%;justify-content:center;padding:16px">⊕ Request Demo</button>
+      </form>
+
+      <div id="formSuccess" class="cut-corner glow-cyan hidden" style="background:rgba(13,13,20,.7);padding:40px;text-align:center">
+        <div style="font-size:40px;color:var(--zc-green)">✓</div>
+        <h3 class="display" style="margin-top:16px;font-size:24px;color:#fff">Request received.</h3>
+        <p style="margin-top:12px;color:#94a3b8">Thanks for your interest in ZeroCrowd PhishGame. Our team will reach out to schedule a tailored demo.</p>
+        <button onclick="resetForm()" class="mono" style="margin-top:24px;background:none;border:none;color:var(--zc-cyan);cursor:pointer;font-size:13px;text-transform:uppercase;letter-spacing:.18em">← Submit another request</button>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <a href="#home" class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z"/></svg><span class="c-white">ZEROCROWD</span><span class="c-amber">//</span><span class="c-magenta">PHISHGAME</span></a>
+      <p style="margin-top:16px;max-width:360px;font-size:14px;line-height:1.6;color:#94a3b8">Practice the decision. Strengthen the human layer. A gamified cybersecurity education platform that trains real phishing recognition skills — not just awareness.</p>
+      <p class="mono c-cyan" style="margin-top:24px;font-size:11px;text-transform:uppercase;letter-spacing:.3em">Play . Learn . Defend</p>
+    </div>
+    <div class="foot"><h4>Platform</h4><ul><li><a href="#how">How It Works</a></li><li><a href="#features">Features</a></li><li><a href="#arena">Deathmatch Arena</a></li><li><a href="#educators">Educator Control Room</a></li></ul></div>
+    <div class="foot"><h4>Company</h4><ul><li><a href="#applications">Applications</a></li><li><a href="#contact">Request a Demo</a></li><li><a href="#contact">Security &amp; Privacy</a></li><li><a href="#home">Documentation</a></li></ul></div>
+  </div>
+  <div class="wrap"><div class="foot-bottom">
+    <p>© <span id="yr"></span> ZeroCrowd PhishGame. Better awareness. Stronger defenses.</p>
+    <p class="mono" style="text-transform:uppercase;letter-spacing:.18em">Think · Analyze · Decide · Stay Safe</p>
+  </div></div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  function toggleMenu(){
+    var m = document.getElementById('mobNav');
+    var icon = document.getElementById('menuIcon');
+    var open = m.classList.toggle('open');
+    icon.innerHTML = open ? '<path d="M6 6l12 12M6 18L18 6"/>' : '<path d="M4 7h16M4 12h16M4 17h16"/>';
+  }
+  function closeMenu(){
+    document.getElementById('mobNav').classList.remove('open');
+    document.getElementById('menuIcon').innerHTML = '<path d="M4 7h16M4 12h16M4 17h16"/>';
+  }
+
+  // Active nav highlight on scroll
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('nav.desktop a, nav.mobile a'));
+  var sections = ['home','how','features','arena','educators','applications','contact'];
+  window.addEventListener('scroll', function(){
+    var pos = window.scrollY + 120, current = 'home';
+    sections.forEach(function(id){
+      var el = document.getElementById(id);
+      if (el && el.offsetTop <= pos) current = id;
+    });
+    navLinks.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  // ===== DEMO FORM -> anonymous email to skaragiannis@ionio.gr =====
+  // Uses FormSubmit.co (no signup / no API key). Submissions are forwarded
+  // to the target address. The sender's identity is not shared with us.
+  var DEMO_TARGET = 'skaragiannis@ionio.gr';
+  var FORMSUBMIT_ENDPOINT = 'https://formsubmit.co/ajax/' + DEMO_TARGET;
+
+  function showErr(msg){
+    var e = document.getElementById('formErr');
+    e.textContent = msg; e.classList.remove('hidden');
+  }
+  function resetForm(){
+    document.getElementById('demoForm').reset();
+    document.getElementById('demoForm').classList.remove('hidden');
+    document.getElementById('formSuccess').classList.add('hidden');
+    document.getElementById('formErr').classList.add('hidden');
+  }
+  function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  document.getElementById('demoForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var f = ev.currentTarget;
+    var btn = document.getElementById('submitBtn');
+    document.getElementById('formErr').classList.add('hidden');
+
+    var name = f.name.value.trim();
+    var email = f.email.value.trim();
+    var organization = f.organization.value.trim();
+    var useCase = f.useCase.value;
+    var message = f.message.value.trim();
+
+    if (!name){ showErr('A valid name is required.'); return; }
+    if (!isEmail(email)){ showErr('A valid email is required.'); return; }
+    if (!useCase){ showErr('Please select a use case.'); return; }
+
+    btn.disabled = true; btn.textContent = 'Transmitting…';
+
+    var payload = {
+      _subject: 'ZEROCROWD // PHISHGAME — New Demo Request',
+      _template: 'table',
+      _captcha: 'false',
+      Name: name,
+      Email: email,
+      Organization: organization || '(not provided)',
+      'Use Case': useCase,
+      Message: message || '(no message)'
+    };
+
+    fetch(FORMSUBMIT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return { ok: r.ok, j: j }; }); })
+    .then(function(res){
+      if (res.ok){
+        f.classList.add('hidden');
+        document.getElementById('formSuccess').classList.remove('hidden');
+      } else {
+        showErr((res.j && res.j.message) || 'Could not send your request. Please try again.');
+      }
+    })
+    .catch(function(){ showErr('Network error. Please try again.'); })
+    .finally(function(){ btn.disabled = false; btn.textContent = '⊕ Request Demo'; });
+  });
+</script>
+</body>
+</html>
