@@ -55,6 +55,27 @@ Rather than merely informing users of the risks, PhishGame places them in the ro
 
 > The best defence isn't merely knowing the risk. It is having practised recognising it.
 
+## Multilingual Support
+
+This README, the website, and the platform interface are **available in multiple languages upon request**. The following languages are defined:
+
+| Language | Code | Availability |
+|---|---|---|
+| English | `EN` | Available |
+| Greek | `ΕΛ` | Available |
+| German | `DE` | Upon request |
+| French | `FR` | Upon request |
+| Spanish | `ES` | Upon request |
+| Italian | `IT` | Upon request |
+| Portuguese | `PT` | Upon request |
+| Dutch | `NL` | Upon request |
+| Turkish | `TR` | Upon request |
+| Russian | `RU` | Upon request |
+| Chinese | `ZH` | Upon request |
+| Arabic | `AR` | Upon request |
+
+Request a translation by opening an issue, contacting us through the website, or clicking **Request a Demo** — please specify the target language(s) and the scope (documentation, website, or platform interface).
+
 ## Live Site
 
 This repository is published as a **GitHub Pages** site:
