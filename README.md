@@ -55,48 +55,11 @@ Rather than merely informing users of the risks, PhishGame places them in the ro
 
 > The best defence isn't merely knowing the risk. It is having practised recognising it.
 
-## Site Structure
-
-The website is a **Unified HTML (All-in-one)** document — a single self-contained HTML file with no frameworks, no build tools, and no backend, covering the following sections:
-
-- Platform overview
-- How It Works
-- Features
-- Arena
-- Educators
-- Organisation
-- Applications
-- Contact / Request a Demonstration
-- Documentation
-
-## Getting Started
-
-No install or build step is required:
-
-```bash
-# serve it locally (any static server works)
-python -m http.server 8000
-```
-
-Then open `http://localhost:8000` — or simply open `index.html` in a browser.
-
 ## Live Site
 
 This repository is published as a **GitHub Pages** site:
 
 **https://dr-skaragiannis.github.io/ZeroCrowd-PhishGame/**
-
-## Repository Contents
-
-```
-index.html       # the entire website — markup, styles, and JS, all inline
-README.md        # this file
-LICENSE.md       # proprietary license — see below
-```
-
-## GitHub Pages Deployment
-
-The site is served from the root of the `main` branch via GitHub Pages. No build step is required — on every push to `main`, GitHub serves `index.html` as the landing page.
 
 ## License
 
