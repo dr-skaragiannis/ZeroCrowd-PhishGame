@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<meta name="google-site-verification" content="GoQuJJfhtF8kzM-O8OG0sGvR3-h_YIa6cpaqpIRuRI0" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ZEROCROWD // PHISHGAME — Gamified Phishing Recognition Training</title>
-<meta name="description" content="A live phishing simulation training arena. Hand-forged emails, 5 escalating threat tiers, multidimensional scoring, and real-time Deathmatch competition." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+<title>ZEROCROWD // PHISHGAME</title>
+<meta name="description" data-i18n="metaDesc" content="An interactive training and assessment environment for phishing-recognition skills: realistic email simulation, adaptive difficulty, multidimensional scoring, and competitive real-time assessment." />
 <style>
   :root {
     --zc-bg: #08080c;
@@ -16,33 +14,27 @@
     --zc-magenta: #ff2bd6;
     --zc-cyan: #22d3ee;
     --zc-green: #34d399;
-    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-    --sans: "Inter", system-ui, -apple-system, sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    background: var(--zc-bg);
-    color: #e5e7eb;
-    font-family: var(--sans);
-    -webkit-font-smoothing: antialiased;
-    line-height: 1.5;
-    overflow-x: hidden;
+    background: var(--zc-bg); color: #e5e7eb; font-family: var(--sans);
+    -webkit-font-smoothing: antialiased; line-height: 1.5; overflow-x: hidden;
+    display: flex; flex-direction: column; min-height: 100vh;
   }
+  main { flex: 1 0 auto; }
   a { color: inherit; text-decoration: none; }
   ::selection { background: rgba(245,166,35,.35); color: #fff; }
+  body.menu-open { overflow: hidden; }
 
   .mono { font-family: var(--mono); }
   .display { font-family: var(--mono); letter-spacing: -.02em; font-weight: 800; }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .wrap { width: 85%; max-width: 1680px; margin: 0 auto; padding: 0; }
 
-  /* utility colors */
-  .c-amber { color: var(--zc-amber); }
-  .c-magenta { color: var(--zc-magenta); }
-  .c-cyan { color: var(--zc-cyan); }
-  .c-green { color: var(--zc-green); }
-  .c-white { color: #fff; }
-  .muted { color: #94a3b8; }
+  .c-amber { color: var(--zc-amber); } .c-magenta { color: var(--zc-magenta); }
+  .c-cyan { color: var(--zc-cyan); } .c-green { color: var(--zc-green); } .c-white { color: #fff; }
 
   .cyber-grid {
     background-image:
@@ -50,9 +42,7 @@
       linear-gradient(90deg, rgba(34,211,238,.05) 1px, transparent 1px);
     background-size: 44px 44px;
   }
-  .cut-corner {
-    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
-  }
+  .cut-corner { clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); }
   .glow-amber { box-shadow: 0 0 0 1px rgba(245,166,35,.4), 0 0 28px rgba(245,166,35,.15); }
   .glow-cyan { box-shadow: 0 0 0 1px rgba(34,211,238,.4), 0 0 28px rgba(34,211,238,.15); }
   .glow-magenta { box-shadow: 0 0 0 1px rgba(255,43,214,.4), 0 0 28px rgba(255,43,214,.15); }
@@ -62,103 +52,167 @@
   header {
     position: sticky; top: 0; z-index: 50;
     border-bottom: 1px solid rgba(255,255,255,.1);
-    background: rgba(8,8,12,.85);
-    backdrop-filter: blur(10px);
+    background: rgba(8,8,12,.88); backdrop-filter: blur(12px);
   }
-  .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; max-width: 1200px; margin: 0 auto; }
-  .logo { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-weight: 800; letter-spacing: -.02em; font-size: 15px; }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 85%; max-width: 1680px; padding: 14px 0; margin: 0 auto; }
+  .logo { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-weight: 800; letter-spacing: -.02em; font-size: 15px; white-space: nowrap; }
   .logo svg { width: 22px; height: 22px; color: var(--zc-cyan); }
-  nav.desktop { display: none; gap: 4px; align-items: center; }
-  nav.desktop a {
-    padding: 8px 12px; font-family: var(--mono); font-size: 11px; text-transform: uppercase;
-    letter-spacing: .18em; color: #94a3b8; transition: color .15s;
+
+  nav.desktop { display: none; gap: 2px; align-items: center; }
+  nav.desktop > a, .dd-toggle {
+    padding: 9px 12px; font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+    letter-spacing: .14em; color: #94a3b8; transition: color .15s; background: none; border: none; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
   }
-  nav.desktop a:hover, nav.desktop a.active { color: var(--zc-amber); }
+  nav.desktop a:hover, nav.desktop a.active, .dd-toggle:hover, .dd-toggle.active,
+  .has-dropdown.active > .dd-toggle { color: var(--zc-amber); }
+  .has-dropdown.active > .dd-toggle svg { transform: rotate(180deg); }
+  .mm-group-label.active { color: var(--zc-amber); }
+  .dd-toggle svg { width: 10px; height: 10px; transition: transform .15s; }
+  .has-dropdown { position: relative; }
+  /* invisible hover bridge so the submenu stays open while moving into it */
+  .has-dropdown::after { content: ""; position: absolute; top: 100%; left: 0; right: 0; height: 16px; }
+  .dropdown {
+    display: none; position: absolute; top: 100%; left: 0; min-width: 252px;
+    background: var(--zc-panel); border: 1px solid rgba(255,255,255,.14);
+    padding: 14px 8px 8px; box-shadow: 0 24px 60px rgba(0,0,0,.6); z-index: 60;
+  }
+  .dropdown a { display: block; padding: 11px 12px; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; color: #cbd5e1; border-left: 2px solid transparent; }
+  .dropdown a:hover, .dropdown a.active { color: #fff; background: rgba(245,166,35,.08); border-left-color: var(--zc-amber); }
+  @media (min-width: 1180px) {
+    nav.desktop { display: flex; }
+    .has-dropdown:hover .dropdown, .has-dropdown:focus-within .dropdown, .has-dropdown.open .dropdown { display: block; }
+    .has-dropdown:hover .dd-toggle svg, .has-dropdown:focus-within .dd-toggle svg, .has-dropdown.open .dd-toggle svg { transform: rotate(180deg); }
+    .hamburger-btn { display: none; }
+    #deskNav a.home-text { display: none; }
+  }
+
   .btn {
-    display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: none;
     font-family: var(--mono); font-size: 12px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .18em; padding: 12px 22px; transition: transform .15s;
+    letter-spacing: .14em; padding: 12px 20px; transition: transform .15s, background .15s; text-align: center;
   }
   .btn-amber { background: var(--zc-amber); color: #000; }
   .btn-amber:hover { transform: translateY(-2px); }
   .btn-outline { border: 1px solid rgba(34,211,238,.6); color: var(--zc-cyan); background: transparent; }
   .btn-outline:hover { background: rgba(34,211,238,.1); }
-  .header-cta { display: none; }
-  .menu-btn { display: inline-flex; padding: 8px; border: 1px solid rgba(255,255,255,.15); background: transparent; color: #cbd5e1; cursor: pointer; border-radius: 4px; }
-  .menu-btn svg { width: 20px; height: 20px; }
-  nav.mobile { display: none; flex-direction: column; border-top: 1px solid rgba(255,255,255,.1); background: var(--zc-panel); padding: 12px 24px; }
-  nav.mobile.open { display: flex; }
-  nav.mobile a { padding: 12px 4px; font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .18em; color: #cbd5e1; }
-  nav.mobile a.active { color: var(--zc-amber); }
 
-  @media (min-width: 1024px) {
-    nav.desktop { display: flex; }
-    .header-cta { display: flex; }
-    .menu-btn { display: none; }
+  .lang-switch { display: inline-flex; border: 1px solid rgba(255,255,255,.15); border-radius: 4px; overflow: hidden; flex: none; }
+  .lang-switch button {
+    background: transparent; border: none; cursor: pointer; color: #94a3b8;
+    font-family: var(--mono); font-weight: 700; font-size: 11px; letter-spacing: .08em; padding: 7px 10px;
+    transition: background .15s, color .15s;
+  }
+  .lang-switch button.active { background: var(--zc-amber); color: #000; }
+  .lang-switch button:not(.active):hover { color: #fff; }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .icon-btn { display: inline-flex; align-items: center; justify-content: center; padding: 7px; border: 1px solid rgba(255,255,255,.15); background: transparent; color: #cbd5e1; cursor: pointer; border-radius: 4px; }
+  .icon-btn svg { width: 20px; height: 20px; }
+  .icon-btn:hover { color: #fff; border-color: rgba(255,255,255,.35); }
+  .header-cta { display: inline-flex; box-shadow: 0 0 0 1px rgba(245,166,35,.55), 0 0 22px rgba(245,166,35,.28); }
+  @media (max-width: 620px) { .header-cta { display: none; } }
+
+  /* ===== FULL-SCREEN MOBILE MENU ===== */
+  .mobile-menu {
+    position: fixed; inset: 0; z-index: 100; background: rgba(8,8,12,.985);
+    display: none; flex-direction: column; padding: 20px 7.5% 32px;
+    background-image:
+      linear-gradient(rgba(34,211,238,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,211,238,.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+    overflow-y: auto;
+  }
+  .mobile-menu.open { display: flex; animation: mmFade .18s ease; }
+  @keyframes mmFade { from { opacity: 0; } to { opacity: 1; } }
+  .mm-top { display: flex; align-items: center; justify-content: space-between; }
+  .mm-nav { margin-top: 28px; display: flex; flex-direction: column; gap: 4px; }
+  .mm-nav > a {
+    font-family: var(--mono); font-weight: 800; font-size: 30px; letter-spacing: -.01em; color: #fff;
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 14px;
+  }
+  .mm-nav > a .n { color: var(--zc-amber); font-size: 13px; letter-spacing: .16em; }
+  .mm-nav > a.active { color: var(--zc-amber); }
+  .mm-group-label { font-family: var(--mono); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--zc-cyan); margin: 22px 0 6px; }
+  .mm-sub { display: flex; flex-direction: column; }
+  .mm-sub a { font-family: var(--mono); font-size: 19px; font-weight: 700; color: #cbd5e1; padding: 11px 0 11px 18px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .mm-sub a.active { color: var(--zc-amber); }
+  .mm-bottom { margin-top: auto; padding-top: 28px; display: flex; flex-direction: column; gap: 18px; }
+  .mm-bottom .lang-switch { align-self: flex-start; }
+  @media (max-width: 560px) {
+    .nav-inner { padding: 12px 0; gap: 8px; }
+    .logo { font-size: 13px; gap: 6px; } .logo svg { width: 19px; height: 19px; }
+    .lang-switch button { padding: 6px 8px; }
+    .icon-btn { padding: 6px; } .icon-btn svg { width: 18px; height: 18px; }
+    .mm-nav > a { font-size: 26px; }
+  }
+  @media (max-width: 620px) {
+    .nav-inner { width: 90%; }
   }
 
-  /* ===== SECTIONS ===== */
-  section { scroll-margin-top: 70px; }
+  /* ===== PAGES / ROUTING ===== */
+  .page { display: none; animation: pgIn .25s ease; }
+  .page.active { display: block; }
+  @keyframes pgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ===== PAGE BANNER ===== */
+  .banner { position: relative; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.1); background: var(--zc-bg); }
+  .banner .blob { position: absolute; border-radius: 999px; filter: blur(120px); pointer-events: none; }
+  .banner .b1 { top: -140px; right: -60px; width: 420px; height: 420px; background: rgba(255,43,214,.09); }
+  .banner .b2 { bottom: -160px; left: -80px; width: 420px; height: 420px; background: rgba(34,211,238,.09); }
+  .banner-inner { position: relative; padding: 72px 0 64px; }
+  .crumbs { font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #64748b; margin-bottom: 22px; }
+  .crumbs a:hover { color: var(--zc-cyan); }
+  .crumbs .sep { margin: 0 10px; opacity: .5; }
+
+  section { scroll-margin-top: 72px; }
   .eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .3em; }
   .eyebrow .line { height: 1px; width: 32px; background: currentColor; opacity: .6; }
-
-  h2.sec { font-family: var(--mono); font-weight: 800; letter-spacing: -.02em; color: #fff; font-size: clamp(26px, 4vw, 40px); margin-top: 16px; line-height: 1.05; }
+  h2.sec { font-family: var(--mono); font-weight: 800; letter-spacing: -.02em; color: #fff; font-size: clamp(25px, 3.6vw, 38px); margin-top: 16px; line-height: 1.08; }
 
   .hero { position: relative; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.1); background: var(--zc-bg); }
-  .blob { position: absolute; border-radius: 999px; filter: blur(120px); pointer-events: none; }
+  .hero .blob { position: absolute; border-radius: 999px; filter: blur(120px); pointer-events: none; }
   .hero .b1 { top: -160px; right: 0; width: 500px; height: 500px; background: rgba(255,43,214,.10); }
   .hero .b2 { bottom: -160px; left: -80px; width: 500px; height: 500px; background: rgba(34,211,238,.10); }
-  .hero-inner { position: relative; padding: 90px 0; }
-  h1.hero-title { font-family: var(--mono); font-weight: 800; letter-spacing: -.04em; color: #fff; line-height: .9; font-size: clamp(44px, 9vw, 96px); }
-
-  .lead { max-width: 640px; margin-top: 28px; font-size: 18px; line-height: 1.6; color: #94a3b8; }
-  .cta-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 36px; }
+  .hero-inner { position: relative; padding: 88px 0 84px; }
+  h1.hero-title { font-family: var(--mono); font-weight: 800; letter-spacing: -.04em; color: #fff; line-height: .92; font-size: clamp(40px, 8vw, 92px); }
+  h1.banner-title { font-family: var(--mono); font-weight: 800; letter-spacing: -.03em; color: #fff; line-height: .98; font-size: clamp(34px, 6vw, 64px); margin-top: 18px; }
+  .lead { max-width: 700px; margin-top: 24px; font-size: 18px; line-height: 1.65; color: #94a3b8; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 34px; }
 
   .grid { display: grid; gap: 16px; }
-  .g3 { grid-template-columns: 1fr; }
-  .g2 { grid-template-columns: 1fr; }
-  .g5 { grid-template-columns: 1fr; }
+  .g3 { grid-template-columns: 1fr; } .g2 { grid-template-columns: 1fr; } .g5 { grid-template-columns: 1fr; }
   @media (min-width: 700px) { .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(2,1fr);} }
   @media (min-width: 980px) { .g3 { grid-template-columns: repeat(3,1fr);} .g5 { grid-template-columns: repeat(5,1fr);} }
 
   .card { background: rgba(13,13,20,.7); padding: 24px; }
   .card h3 { font-family: var(--mono); font-weight: 700; color: #fff; }
-  .card p { margin-top: 12px; font-size: 14px; line-height: 1.6; color: #94a3b8; }
+  .card p { margin-top: 12px; font-size: 14px; line-height: 1.65; color: #94a3b8; }
+  .card.link-card { transition: transform .15s, border-color .15s; display: flex; flex-direction: column; }
+  .card.link-card:hover { transform: translateY(-4px); border-color: rgba(245,166,35,.45); }
+  .card .more { margin-top: auto; padding-top: 18px; font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--zc-cyan); }
 
-  .stats { border-bottom: 1px solid rgba(255,255,255,.1); background: var(--zc-panel); }
-  .stats-inner { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px 0; padding: 48px 0; text-align: center; }
+  .stats { border-top: 1px solid rgba(255,255,255,.1); border-bottom: 1px solid rgba(255,255,255,.1); background: var(--zc-panel); }
+  .stats-inner { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px 0; padding: 46px 0; text-align: center; }
   @media (min-width: 768px) { .stats-inner { grid-template-columns: repeat(6,1fr); } }
   .stat-num { font-family: var(--mono); font-weight: 800; font-size: 40px; color: var(--zc-amber); }
-  .stat-lbl { margin-top: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .18em; color: #64748b; }
+  .stat-lbl { margin-top: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: #64748b; }
 
-  /* light sections */
   .light { background: #f1f5f9; color: #0f172a; }
   .light h2 { color: #0f172a; }
   .light .eyebrow { color: #ea580c; }
   .light .lightcard { background: #fff; border: 1px solid #cbd5e1; border-radius: 16px; padding: 32px; box-shadow: 0 20px 40px -20px rgba(0,0,0,.25); }
-  .light p.big { font-size: 18px; line-height: 1.6; color: #475569; margin-top: 20px; }
-
+  .light p.big { font-size: 18px; line-height: 1.65; color: #475569; margin-top: 20px; }
   .pad { padding: 80px 0; }
 
-  /* table */
-  .cmp { overflow: hidden; border-radius: 8px; border: 1px solid rgba(255,255,255,.1); margin-top: 40px; }
-  .cmp .row { display: grid; grid-template-columns: 1fr 1fr; }
-  .cmp .head { background: var(--zc-panel); font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .18em; }
-  .cmp .head .l { color: #64748b; } .cmp .head .r { color: var(--zc-amber); }
-  .cmp .cell { padding: 16px 20px; font-size: 14px; }
-  .cmp .cell.l { border-right: 1px solid rgba(255,255,255,.1); color: #94a3b8; }
-  .cmp .cell.r { color: #fff; }
-  .cmp .row.odd { background: rgba(13,13,20,.4); } .cmp .row.even { background: var(--zc-bg); }
-
   .signal { display: grid; gap: 8px; border: 1px solid rgba(255,255,255,.1); background: rgba(13,13,20,.5); padding: 20px; border-radius: 8px; }
-  @media (min-width: 768px) { .signal { grid-template-columns: 180px 1fr; gap: 24px; } }
+  @media (min-width: 768px) { .signal { grid-template-columns: 190px 1fr; gap: 24px; } }
   .signal .name { font-family: var(--mono); font-weight: 700; font-size: 18px; color: var(--zc-cyan); }
   .signal .rule { font-size: 14px; color: #cbd5e1; }
 
   .chip { display: inline-block; border-radius: 4px; padding: 4px 12px; font-family: var(--mono); font-size: 13px; }
   .chip-amber { border: 1px solid rgba(245,166,35,.4); background: rgba(245,166,35,.1); color: var(--zc-amber); }
   .chip-cyan { border: 1px solid rgba(34,211,238,.4); background: rgba(34,211,238,.1); color: var(--zc-cyan); }
-
   code.k { font-family: var(--mono); font-weight: 700; }
 
   .levels { display: flex; flex-direction: column; gap: 12px; margin-top: 40px; }
@@ -173,39 +227,74 @@
   .achv .star { color: var(--zc-amber); margin-top: 2px; }
 
   .radar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
-  .radar-cell { border: 1px solid #e2e8f0; background: #f8fafc; padding: 12px; text-align: center; border-radius: 8px; font-family: var(--mono); font-weight: 700; font-size: 14px; color: #1e293b; }
+  .radar-cell { border: 1px solid #e2e8f0; background: #f8fafc; padding: 12px; text-align: center; font-family: var(--mono); font-weight: 700; font-size: 14px; color: #1e293b; border-radius: 8px; }
 
-  .note { border: 1px solid rgba(255,43,214,.3); background: rgba(255,43,214,.05); padding: 24px; border-radius: 8px; margin-top: 24px; font-size: 14px; line-height: 1.6; color: #cbd5e1; }
+  .note { border: 1px solid rgba(255,43,214,.3); background: rgba(255,43,214,.05); padding: 24px; border-radius: 8px; margin-top: 24px; font-size: 14px; line-height: 1.65; color: #cbd5e1; }
 
-  /* contact */
+  /* comparison table */
+  .cmp { overflow: hidden; border-radius: 8px; border: 1px solid rgba(255,255,255,.1); margin-top: 40px; }
+  .cmp .row { display: grid; grid-template-columns: 1fr 1fr; }
+  .cmp .head { background: var(--zc-panel); font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .14em; }
+  .cmp .head .l { color: #64748b; } .cmp .head .r { color: var(--zc-amber); }
+  .cmp .cell { padding: 15px 20px; font-size: 14px; }
+  .cmp .cell.l { border-right: 1px solid rgba(255,255,255,.1); color: #94a3b8; }
+  .cmp .cell.r { color: #fff; }
+  .cmp .row.odd { background: rgba(13,13,20,.4); } .cmp .row.even { background: var(--zc-bg); }
+
+  /* form */
   .form-grid { display: grid; gap: 48px; }
   @media (min-width: 1024px) { .form-grid { grid-template-columns: 1fr 1.2fr; } }
-  .mail-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 20px; font-family: var(--mono); font-weight: 700; font-size: 16px; color: var(--zc-amber); border: 1px solid rgba(245,166,35,.4); background: rgba(245,166,35,.08); padding: 14px 20px; border-radius: 8px; transition: transform .15s, box-shadow .15s; }
-  .mail-link:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(245,166,35,.15); }
-  .mail-link svg { width: 18px; height: 18px; }
-  .socials { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .socials a { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid rgba(255,255,255,.15); border-radius: 6px; color: #94a3b8; transition: color .15s, border-color .15s, background .15s; }
-  .socials a:hover { color: var(--zc-amber); border-color: rgba(245,166,35,.5); background: rgba(245,166,35,.08); }
-  .socials svg { width: 16px; height: 16px; }
-  .header-socials { display: none; }
-  @media (min-width: 1024px) { .header-socials { display: flex; } }
-  .mob-socials { padding: 12px 4px; }
-  .foot-socials { margin-top: 24px; }
+  .field label { display: block; margin-bottom: 8px; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: #94a3b8; }
+  .field input, .field select, .field textarea {
+    width: 100%; border-radius: 4px; border: 1px solid rgba(255,255,255,.15); background: rgba(8,8,12,.7);
+    padding: 12px 16px; font-size: 14px; color: #fff; font-family: var(--sans); outline: none; transition: border-color .15s, box-shadow .15s;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: #64748b; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--zc-cyan); box-shadow: 0 0 0 1px rgba(34,211,238,.4), 0 0 20px rgba(34,211,238,.15); }
+  .form-2 { display: grid; gap: 20px; }
+  @media (min-width: 640px) { .form-2 { grid-template-columns: 1fr 1fr; } }
+  .form-err { margin-top: 16px; border: 1px solid rgba(255,43,214,.4); background: rgba(255,43,214,.1); padding: 12px 16px; border-radius: 4px; font-size: 14px; color: var(--zc-magenta); }
   .highlight { display: flex; gap: 12px; }
   .highlight .arw { color: var(--zc-amber); margin-top: 2px; }
   .highlight .t { font-family: var(--mono); font-weight: 700; font-size: 14px; color: #fff; }
 
-  footer { border-top: 1px solid rgba(255,255,255,.1); background: var(--zc-panel); }
+  /* contact + social */
+  .contact-card { background: rgba(13,13,20,.7); padding: 36px; }
+  .contact-card h3 { font-family: var(--mono); font-weight: 800; color: #fff; font-size: 22px; }
+  .contact-card .sub { margin-top: 10px; font-size: 14px; line-height: 1.65; color: #94a3b8; }
+  .contact-email { display: flex; align-items: center; gap: 16px; margin-top: 28px;
+    border: 1px solid rgba(34,211,238,.35); background: rgba(34,211,238,.06); border-radius: 8px;
+    padding: 16px 18px; transition: transform .15s, border-color .15s, background .15s; }
+  .contact-email:hover { transform: translateY(-2px); border-color: var(--zc-cyan); background: rgba(34,211,238,.1); }
+  .contact-email .ic { flex: none; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 8px; background: rgba(34,211,238,.12); color: var(--zc-cyan); }
+  .contact-email .cap { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #64748b; }
+  .contact-email .addr { display: block; margin-top: 2px; color: #fff; font-size: 15px; word-break: break-all; }
+  .social-label { margin-top: 32px; font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: #64748b; }
+  .social-row { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .social-ic { width: 46px; height: 46px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,.15); border-radius: 9px; color: #cbd5e1; transition: transform .15s, color .15s, border-color .15s, background .15s; }
+  .social-ic svg { width: 21px; height: 21px; }
+  .social-ic:hover { transform: translateY(-3px); background: rgba(255,255,255,.06); }
+  .social-ic.s-gh:hover { color: #fff; border-color: #fff; }
+  .social-ic.s-li:hover { color: #0a66c2; border-color: #0a66c2; background: rgba(10,102,194,.1); }
+  .social-ic.s-ig:hover { color: #e1306c; border-color: #e1306c; background: rgba(225,48,108,.1); }
+  .social-ic.s-fb:hover { color: #1877f2; border-color: #1877f2; background: rgba(24,119,242,.1); }
+  .social-ic.s-em:hover { color: var(--zc-amber); border-color: var(--zc-amber); background: rgba(245,166,35,.1); }
+  .foot-social { margin-top: 22px; }
+  .foot-social .social-ic { width: 40px; height: 40px; }
+  .foot-social .social-ic svg { width: 18px; height: 18px; }
+
+  footer { border-top: 1px solid rgba(255,255,255,.1); background: var(--zc-panel); flex-shrink: 0; }
   .foot-grid { display: grid; gap: 40px; padding: 48px 0; }
   @media (min-width: 768px) { .foot-grid { grid-template-columns: 2fr 1fr 1fr; } }
-  .foot h4 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .18em; color: #64748b; }
+  .foot h4 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: #64748b; }
   .foot ul { list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
   .foot ul a { font-size: 14px; color: #94a3b8; } .foot ul a:hover { color: #fff; }
   .foot-bottom { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(255,255,255,.1); padding: 24px 0; font-size: 12px; color: #64748b; }
   @media (min-width: 640px) { .foot-bottom { flex-direction: row; align-items: center; justify-content: space-between; } }
 
   .hidden { display: none !important; }
-  .relative { position: relative; }
   .center { text-align: center; }
   .divider-top { border-top: 1px solid rgba(255,255,255,.1); }
 </style>
@@ -215,376 +304,1157 @@
 <!-- HEADER -->
 <header>
   <div class="nav-inner">
-    <a href="#home" class="logo" onclick="closeMenu()">
+    <a href="#/" class="logo">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z"/></svg>
       <span class="c-white">ZEROCROWD</span><span class="c-amber">//</span><span class="c-magenta">PHISHGAME</span>
     </a>
+
     <nav class="desktop" id="deskNav">
-      <a href="#how">How It Works</a>
-      <a href="#features">Features</a>
-      <a href="#arena">Arena</a>
-      <a href="#educators">Educators</a>
-      <a href="#applications">Applications</a>
-      <a href="#contact">Contact</a>
+      <a href="#/" class="home-text" data-i18n="nav_home"></a>
+      <div class="has-dropdown" id="gameDD">
+        <button type="button" class="dd-toggle" onclick="toggleDropdown(event)">
+          <span data-i18n="nav_game"></span>
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 4 4 4 4-4"/></svg>
+        </button>
+        <div class="dropdown">
+          <a href="#/how-it-works" data-route="how-it-works" data-i18n="nav_how"></a>
+          <a href="#/features" data-route="features" data-i18n="nav_features"></a>
+          <a href="#/arena" data-route="arena" data-i18n="nav_arena"></a>
+        </div>
+      </div>
+      <a href="#/educators" data-route="educators" data-i18n="nav_educators"></a>
+      <a href="#/applications" data-route="applications" data-i18n="nav_applications"></a>
+      <a href="#/contact" data-route="contact" data-i18n="nav_contact"></a>
     </nav>
-    <div class="socials header-socials">
-      <a href="mailto:skaragiannis@ionio.gr" aria-label="Email" title="skaragiannis@ionio.gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>
-      <a href="https://github.com/dr-skaragiannis" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.12 0 1.53-.01 2.77-.01 3.15 0 .31.21.67.8.56A10.51 10.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
-      <a href="https://www.linkedin.com/in/stylianos-karagiannis/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg></a>
-      <a href="https://www.instagram.com/s.karagiannis.dr/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>
-      <a href="https://www.facebook.com/Karagiannis.Stylianos/" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.08 5.66 21.24 10.44 22v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.49-3.91 3.78-3.91 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.9h-2.34V22c4.78-.76 8.43-4.92 8.43-9.94Z"/></svg></a>
+
+    <div class="header-right">
+      <a href="#/" class="icon-btn" data-i18n-title="nav_home" title="Home" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </a>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" id="langEn" onclick="setLang('en')">EN</button>
+        <button type="button" id="langEl" onclick="setLang('el')">ΕΛ</button>
+      </div>
+      <a href="#/contact" class="btn btn-amber cut-corner header-cta" data-i18n="nav_cta"></a>
+      <button class="icon-btn hamburger-btn" onclick="openMenu()" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>
-    <div class="header-cta"><a href="#contact" class="btn btn-amber cut-corner">Request Demo</a></div>
-    <button class="menu-btn" onclick="toggleMenu()" aria-label="Toggle menu">
-      <svg id="menuIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-    </button>
   </div>
-  <nav class="mobile" id="mobNav">
-    <a href="#how" onclick="closeMenu()">How It Works</a>
-    <a href="#features" onclick="closeMenu()">Features</a>
-    <a href="#arena" onclick="closeMenu()">Arena</a>
-    <a href="#educators" onclick="closeMenu()">Educators</a>
-    <a href="#applications" onclick="closeMenu()">Applications</a>
-    <a href="#contact" onclick="closeMenu()">Contact</a>
-    <a href="#contact" class="btn btn-amber cut-corner" style="margin-top:8px;justify-content:center" onclick="closeMenu()">Request Demo</a>
-    <div class="socials mob-socials">
-      <a href="mailto:skaragiannis@ionio.gr" aria-label="Email" title="skaragiannis@ionio.gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>
-      <a href="https://github.com/dr-skaragiannis" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.12 0 1.53-.01 2.77-.01 3.15 0 .31.21.67.8.56A10.51 10.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
-      <a href="https://www.linkedin.com/in/stylianos-karagiannis/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg></a>
-      <a href="https://www.instagram.com/s.karagiannis.dr/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>
-      <a href="https://www.facebook.com/Karagiannis.Stylianos/" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.08 5.66 21.24 10.44 22v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.49-3.91 3.78-3.91 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.9h-2.34V22c4.78-.76 8.43-4.92 8.43-9.94Z"/></svg></a>
-    </div>
-  </nav>
 </header>
 
-<!-- HERO -->
-<section id="home" class="hero cyber-grid">
-  <div class="blob b1"></div><div class="blob b2"></div>
-  <div class="wrap hero-inner">
-    <div class="eyebrow c-cyan"><span class="line"></span>ZEROCROWD // PHISHGAME</div>
-    <h1 class="hero-title" style="margin-top:24px">DECODE THE INBOX.<br>CATCH THE <span class="c-magenta">PHISH.</span></h1>
-    <p class="lead">A live phishing simulation training arena. Hand-forged emails, 5 escalating threat tiers. Point-and-click the suspicious indicators, explain your reasoning, level up. Your call: <span class="c-magenta">PHISHING</span> or <span class="c-green">LEGIT</span>.</p>
-    <div class="cta-row">
-      <a href="#contact" class="btn btn-amber cut-corner">⊕ Request Demo</a>
-      <a href="#how" class="btn btn-outline cut-corner">⚙ How It Works</a>
-    </div>
-    <div class="grid g3" style="margin-top:64px">
-      <div class="card cut-corner border-soft"><div style="font-size:24px" class="c-magenta">◎</div><h3 style="margin-top:16px;font-size:18px">POINT &amp; CLICK</h3><p>Tag suspicious tokens directly on the email body. Highlight the sender, subject, or link and classify each as safe or malicious. Wrong picks cost you.</p></div>
-      <div class="card cut-corner border-soft"><div style="font-size:24px" class="c-amber">⚡</div><h3 style="margin-top:16px;font-size:18px">AI-GRADED REASONING</h3><p>An educator-configured grader (AI/LLM or deterministic algorithm) scores your free-text justification. Quality of thinking matters, not just the final call.</p></div>
-      <div class="card cut-corner border-soft"><div style="font-size:24px" class="c-cyan">🏆</div><h3 style="margin-top:16px;font-size:18px">BADGES &amp; LEADERBOARD</h3><p>First Blood, Indicator Sniper, Streak Master, Combo King. Nine achievements and a global top-50 leaderboard. Rank up across 5 escalating tiers.</p></div>
-    </div>
+<!-- FULL-SCREEN MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mm-top">
+    <a href="#/" class="logo" onclick="closeMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z"/></svg>
+      <span class="c-white">ZEROCROWD</span><span class="c-amber">//</span><span class="c-magenta">PHISHGAME</span>
+    </a>
+    <button class="icon-btn" onclick="closeMenu()" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M6 18 18 6"/></svg>
+    </button>
   </div>
-</section>
 
-<!-- STATS -->
-<section class="stats"><div class="wrap"><div class="stats-inner">
-  <div><div class="stat-num">5</div><div class="stat-lbl">Scoring dimensions</div></div>
-  <div><div class="stat-num">5</div><div class="stat-lbl">Difficulty tiers</div></div>
-  <div><div class="stat-num">6</div><div class="stat-lbl">Indicator categories</div></div>
-  <div><div class="stat-num">9</div><div class="stat-lbl">Achievements</div></div>
-  <div><div class="stat-num">3</div><div class="stat-lbl">Arena modes</div></div>
-  <div><div class="stat-num">7</div><div class="stat-lbl">Educator sections</div></div>
-</div></div></section>
-
-<!-- PROBLEM (light) -->
-<section class="light"><div class="wrap pad">
-  <div class="grid g2" style="align-items:center;gap:48px">
-    <div>
-      <div class="eyebrow"><span class="line"></span>The Problem</div>
-      <h2 class="sec">Human decision-making is the critical layer of cybersecurity.</h2>
-      <p class="big">Even with email filtering, endpoint protection, firewalls, and detection systems, the user remains a critical decision point. Phishing exploits the everyday dependence on electronic communication — every link, attachment, and request demands an immediate judgment.</p>
-      <p class="big">Traditional training relies on presentations and static quizzes. They transmit knowledge — but do not ensure a user can <strong>apply</strong> it against a real suspicious message.</p>
+  <nav class="mm-nav">
+    <a href="#/" onclick="closeMenu()"><span class="n">00</span><span data-i18n="nav_home"></span></a>
+    <div class="mm-group-label" id="mmGameLabel" data-i18n="nav_game"></div>
+    <div class="mm-sub">
+      <a href="#/how-it-works" onclick="closeMenu()" data-route="how-it-works" data-i18n="nav_how"></a>
+      <a href="#/features" onclick="closeMenu()" data-route="features" data-i18n="nav_features"></a>
+      <a href="#/arena" onclick="closeMenu()" data-route="arena" data-i18n="nav_arena"></a>
     </div>
-    <div class="lightcard">
-      <p class="mono" style="text-transform:uppercase;letter-spacing:.18em;font-size:13px;color:#ea580c">The core principle</p>
-      <p style="margin-top:16px;font-size:24px;font-weight:700;line-height:1.3;color:#0f172a">“Awareness should be transformed into a repeatedly practiced skill.”</p>
-      <p style="margin-top:24px;color:#475569">Rather than simply informing users about phishing risks, PhishGame places them in the role of an analyst: examine realistic emails, identify critical elements, justify the decision, and take responsibility for the final call.</p>
-      <a href="#how" class="mono" style="display:inline-block;margin-top:32px;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.18em;color:#ea580c">See the methodology →</a>
+    <a href="#/educators" onclick="closeMenu()" data-route="educators"><span class="n">04</span><span data-i18n="nav_educators"></span></a>
+    <a href="#/applications" onclick="closeMenu()" data-route="applications"><span class="n">05</span><span data-i18n="nav_applications"></span></a>
+    <a href="#/contact" onclick="closeMenu()" data-route="contact"><span class="n">06</span><span data-i18n="nav_contact"></span></a>
+  </nav>
+
+  <div class="mm-bottom">
+    <a href="#/contact" class="btn btn-amber cut-corner" onclick="closeMenu()" data-i18n="nav_cta"></a>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" onclick="setLang('en')">EN</button>
+      <button type="button" onclick="setLang('el')">ΕΛ</button>
     </div>
   </div>
-</div></section>
+</div>
 
-<!-- HOW IT WORKS -->
-<section id="how" class="divider-top"><div class="wrap pad">
-  <div class="eyebrow c-magenta"><span class="line"></span>The Core Experience — Inbox Mission</div>
-  <h2 class="sec">Five stages of every round</h2>
-  <div class="grid g5" style="margin-top:40px">
-    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">01</div><h3 style="margin-top:16px;font-size:16px">Examine the email</h3><p>The system selects a message matched to your level and language. Read the sender, subject, and body carefully.</p></div>
-    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">02</div><h3 style="margin-top:16px;font-size:16px">Highlight indicators</h3><p>Select any part of the sender, subject, or body. A popover offers Safe or Malicious. Each annotation is stored as a structured note.</p></div>
-    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">03</div><h3 style="margin-top:16px;font-size:16px">Justify your reasoning</h3><p>Write a free-text justification, graded by an LLM or deterministic algorithm on concept coverage and indicator alignment.</p></div>
-    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">04</div><h3 style="margin-top:16px;font-size:16px">Set your confidence</h3><p>Low (×0.5), Medium (×1.0), or High (×1.5). The multiplier applies to the decision — affecting gains and losses.</p></div>
-    <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">05</div><h3 style="margin-top:16px;font-size:16px">Make the call</h3><p>Choose Phishing or Legitimate. Get immediate feedback: correct indicators, missed ones, and incorrect annotations.</p></div>
-  </div>
-</div></section>
+<main>
 
-<!-- ADAPTIVE (light) -->
-<section class="light"><div class="wrap pad">
-  <div class="eyebrow" style="color:#4f46e5"><span class="line"></span>Adaptive Difficulty</div>
-  <h2 class="sec">A five-level progression system</h2>
-  <p class="big" style="max-width:680px">Email difficulty adapts to your level. Early levels contain more obvious indicators; higher levels introduce complex messages combining genuine and deceptive characteristics — training you to evaluate subtle, conflicting signals.</p>
-  <div class="levels">
-    <div class="level"><span class="idx">1</span><div><div class="nm">Beginner</div><div class="xp">0 XP</div></div></div>
-    <div class="level"><span class="idx">2</span><div><div class="nm">Apprentice</div><div class="xp">300 XP</div></div></div>
-    <div class="level"><span class="idx">3</span><div><div class="nm">Analyst</div><div class="xp">800 XP</div></div></div>
-    <div class="level"><span class="idx">4</span><div><div class="nm">Expert</div><div class="xp">1600 XP</div></div></div>
-    <div class="level"><span class="idx">5</span><div><div class="nm">Master</div><div class="xp">3000+ XP</div></div></div>
-  </div>
-</div></section>
+<!-- ============================ HOME ============================ -->
+<div class="page active" data-page="home">
 
-<!-- SCORING -->
-<section class="divider-top"><div class="wrap pad">
-  <div class="eyebrow c-amber"><span class="line"></span>Scoring Engine</div>
-  <h2 class="sec">Five independent signals</h2>
-  <p class="lead" style="margin-top:16px">Performance isn't limited to right-or-wrong. It's derived from a multidimensional engine that rewards the whole decision-making process.</p>
-  <div style="display:flex;flex-direction:column;gap:12px;margin-top:40px">
-    <div class="signal"><div class="name">Decision</div><div class="rule">Correct phishing: +100 · Correct legitimate: +100 · False positive: −60 · False negative: −120.</div></div>
-    <div class="signal"><div class="name">Indicators</div><div class="rule">Correctly identified and classified indicators rewarded by weight. Misclassifications and omissions incur penalties.</div></div>
-    <div class="signal"><div class="name">Time</div><div class="rule">Correct under 10s: +30 · Under 25s: +15 · Incorrect very fast decision: −20.</div></div>
-    <div class="signal"><div class="name">Reasoning</div><div class="rule">S_R = 30R − 20(1−R), where R ∈ [0,1]. Range from −20 to +30.</div></div>
-    <div class="signal"><div class="name">Bonus</div><div class="rule">+25 when all malicious indicators identified and classified, no incorrect annotations, and a correct final judgment.</div></div>
-  </div>
-  <div class="grid g2" style="margin-top:48px">
-    <div class="card cut-corner glow-magenta"><h3 style="font-size:24px">Evidence Gate</h3><p style="color:#cbd5e1">A correct final judgment alone isn't enough for a full score. You must provide at least one correctly identified piece of evidence, or achieve a reasoning score ≥ 0.5.</p><p>Without sufficient evidence, a correct decision is capped from 100 to 40 points. Penalties for incorrect decisions are not capped. This discourages simply guessing.</p></div>
-    <div class="card cut-corner glow-amber"><h3 style="font-size:24px">Combo Multiplier</h3><p style="color:#cbd5e1">Consecutive correct, evidence-supported answers build a combo:</p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px"><span class="chip chip-amber">1 ×1.0</span><span class="chip chip-amber">2 ×1.25</span><span class="chip chip-amber">3 ×1.5</span><span class="chip chip-amber">4 ×1.75</span><span class="chip chip-amber">5+ ×2.0</span></div><p>An incorrect answer resets the combo. Anti-abuse: selections over 160 chars / 24 words are ignored, and total reward is bounded at −250.</p></div>
-  </div>
-</div></section>
-
-<!-- FEATURES -->
-<section id="features" class="divider-top"><div class="wrap pad">
-  <div class="eyebrow c-cyan"><span class="line"></span>Educational Indicators</div>
-  <h2 class="sec">Six phishing indicator categories</h2>
-  <div class="grid g3" style="margin-top:40px">
-    <div class="card cut-corner border-soft"><code class="k c-magenta">fake_domain</code><p>Fake and lookalike domains, character substitutions, and deceptive addresses.</p></div>
-    <div class="card cut-corner border-soft"><code class="k c-amber">credential_request</code><p>Requests for passwords, PINs, card numbers, and other secrets.</p></div>
-    <div class="card cut-corner border-soft"><code class="k c-cyan">suspicious_link</code><p>Real URL inspection, hover behavior, URL mismatch, and naked IP addresses.</p></div>
-    <div class="card cut-corner border-soft"><code class="k c-magenta">urgency</code><p>Artificial urgency and pressure to take immediate action.</p></div>
-    <div class="card cut-corner border-soft"><code class="k c-amber">attachment_risk</code><p>Suspicious .zip, .exe, .html, macros, and other attachments.</p></div>
-    <div class="card cut-corner border-soft"><code class="k c-cyan">minor_hint</code><p>Greetings, spelling, signatures, and other secondary indicators.</p></div>
-  </div>
-  <p class="lead" style="margin-top:32px">Your performance across these categories generates <span class="c-amber">EduTips</span> — three short bilingual cards. The weakest category appears first as “Your Focus,” with two more low-performing categories completing your recommended training.</p>
-
-  <div style="margin-top:64px" class="eyebrow c-amber"><span class="line"></span>Achievements &amp; Motivation</div>
-  <h2 class="sec">Nine core achievements</h2>
-  <div class="grid g3" style="margin-top:40px">
-    <div class="achv"><span class="star">★</span><div><code class="k c-white">first_blood</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">First correct phishing identification</p></div></div>
-    <div class="achv"><span class="star">★</span><div><code class="k c-white">perfect_catch</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">High score with complete indicator ID</p></div></div>
-    <div class="achv"><span class="star">★</span><div><code class="k c-white">fast_hand</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Correct decision in under 10 seconds</p></div></div>
-    <div class="achv"><span class="star">★</span><div><code class="k c-white">streak_master</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Five consecutive correct decisions</p></div></div>
-    <div class="achv"><span class="star">★</span><div><code class="k c-white">indicator_sniper</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Precision indicator hunting</p></div></div>
-    <div class="achv"><span class="star">★</span><div><code class="k c-white">phisher_tracker</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Ten correct phishing identifications</p></div></div>
-    <div class="achv"><span class="star">★</span><div><code class="k c-white">level_master</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Reach the fifth level</p></div></div>
-    <div class="achv"><span class="star">★</span><div><code class="k c-white">no_false_positive</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Clean run without false alarms</p></div></div>
-    <div class="achv"><span class="star">★</span><div><code class="k c-white">combo_king</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8">Build a combo of at least five</p></div></div>
-  </div>
-</div></section>
-
-<!-- COMMAND DECK (light) -->
-<section class="light"><div class="wrap pad">
-  <div class="grid g2" style="align-items:center;gap:48px">
-    <div>
-      <div class="eyebrow" style="color:#4f46e5"><span class="line"></span>Command Deck</div>
-      <h2 class="sec">Your central control dashboard</h2>
-      <p class="big">Six KPI cards — XP, level, accuracy, best streak, average time, and achievements. Track the speed-versus-reward relationship, accuracy over time, accuracy by level, and the phishing vs. legitimate distribution. The live leaderboard refreshes every seven seconds.</p>
-      <p class="big">Each user has a personal profile with an avatar (20 DiceBear Bottts options or a custom 400×400), biography, and statistics.</p>
-    </div>
-    <div class="lightcard">
-      <p class="mono" style="text-transform:uppercase;letter-spacing:.18em;font-size:13px;color:#4f46e5">Awareness Radar — 6 axes</p>
-      <div class="radar-grid">
-        <div class="radar-cell">Detection</div><div class="radar-cell">Examination</div>
-        <div class="radar-cell">Speed</div><div class="radar-cell">Attention</div>
-        <div class="radar-cell">Reasoning</div><div class="radar-cell">Resilience</div>
-      </div>
-      <p style="margin-top:24px;font-size:14px;color:#64748b">A six-axis profile visualizing where your human detection layer is strongest — and where to focus next.</p>
-    </div>
-  </div>
-</div></section>
-
-<!-- COMMS + SPEEDBOARD -->
-<section class="divider-top"><div class="wrap pad">
-  <div class="grid g3">
-    <div class="card cut-corner glow-cyan" style="grid-column:span 1"><h3 style="font-size:24px">COMMS HUD</h3><p style="color:#cbd5e1">A live notification and educational communication system: activity events, achievements, level-ups, first-place changes, speed records, instructor messages, automatic hints, score pulses, and challenge notifications.</p><p>Instructors broadcast to the whole group or individuals — info, warning, or critical.</p></div>
-    <div class="card cut-corner glow-amber"><h3 style="font-size:24px">SpeedBoard</h3><p style="color:#cbd5e1">After each round, the five fastest correct identifications for that specific email are shown.</p><p>The <code class="k c-cyan">/records</code> page offers a full history: level, subject, participant count, record holder, and your best time. The global leaderboard ranks the top 50 by XP.</p></div>
-    <div class="card cut-corner border-soft"><h3 style="font-size:24px">Sound Engine</h3><p style="color:#cbd5e1">Full Web Audio API composition — deep bass drone, LFO-swept filtering, noise pad, and pentatonic arpeggio.</p><p>Dedicated effects for click, select, submit, success, error, badge, and level-up. Off by default, stored in localStorage.</p></div>
-  </div>
-</div></section>
-
-<!-- ARENA -->
-<section id="arena" class="divider-top"><div class="wrap pad">
-  <div class="eyebrow c-magenta"><span class="line"></span>Competitive Real-Time Training</div>
-  <h2 class="sec">Enter the Deathmatch Arena</h2>
-  <p class="lead" style="margin-top:16px">Transform a training session into a shared, competitive phishing-analysis activity. Only one Arena is active at a time — activating a new round auto-terminates the previous one and publishes its results.</p>
-  <div class="grid g3" style="margin-top:40px">
-    <div class="card cut-corner glow-magenta"><h3 style="font-size:22px">Deathmatch</h3><p style="color:#cbd5e1">The instructor selects a difficulty (or any level) and language. The server picks one email — everyone sees exactly the same message simultaneously. Objective comparison: same problem, different strategies.</p></div>
-    <div class="card cut-corner glow-amber"><h3 style="font-size:22px">Blitz</h3><p style="color:#cbd5e1">Participants work independently within a time window. After each submission, the next email auto-loads after 2.5s. Each email is attempted once. Emphasis on speed and consistency.</p></div>
-    <div class="card cut-corner glow-cyan"><h3 style="font-size:22px">Custom</h3><p style="color:#cbd5e1">Mechanically like Deathmatch, but the instructor picks the exact email — ideal for connecting the Arena to a specific lesson or incident presented earlier.</p></div>
-  </div>
-  <div class="grid g2" style="margin-top:48px;gap:48px">
-    <div>
-      <div class="eyebrow c-cyan"><span class="line"></span>Arena Duration</div>
-      <h2 class="sec" style="font-size:26px">A timer for every rhythm</h2>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:24px">
-        <span class="chip chip-cyan">30s</span><span class="chip chip-cyan">1 min</span><span class="chip chip-cyan">2 min</span><span class="chip chip-cyan">5 min</span><span class="chip chip-cyan">15s – 60 min custom</span>
-      </div>
-      <p style="margin-top:24px;font-size:14px;color:#94a3b8;line-height:1.6">The timer stays visible, changing color as time runs low — the final 10 seconds trigger a strong warning.</p>
-    </div>
-    <div>
-      <div class="eyebrow c-magenta"><span class="line"></span>Participation</div>
-      <h2 class="sec" style="font-size:26px">Mandatory or optional</h2>
-      <div style="margin-top:24px;display:flex;flex-direction:column;gap:16px">
-        <div class="card border-soft" style="padding:20px"><div class="mono" style="font-weight:700;font-size:14px;color:var(--zc-magenta)">Mandatory</div><p style="margin-top:8px">The Arena overlay appears automatically when the round starts — ideal for organized sessions.</p></div>
-        <div class="card border-soft" style="padding:20px"><div class="mono" style="font-weight:700;font-size:14px;color:var(--zc-amber)">Optional</div><p style="margin-top:8px">A banner offers “Join Deathmatch” or “Not Now.” Declining applies only to that round.</p></div>
+  <section class="hero cyber-grid">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="wrap hero-inner">
+      <div class="eyebrow c-cyan"><span class="line"></span>ZEROCROWD // PHISHGAME</div>
+      <h1 class="hero-title" style="margin-top:24px" data-i18n="hero_title"></h1>
+      <p class="lead" data-i18n="hero_lead"></p>
+      <div class="cta-row">
+        <a href="#/contact" class="btn btn-amber cut-corner" data-i18n="hero_cta1"></a>
+        <a href="#/how-it-works" class="btn btn-outline cut-corner" data-i18n="hero_cta2"></a>
       </div>
     </div>
-  </div>
-  <div class="note"><span class="mono" style="font-weight:700;color:var(--zc-magenta)">Same engine, no shortcuts.</span> The Arena uses exactly the same scoring engine as solo play. No special multipliers. Evidence Gate, confidence multiplier, combo multiplier, indicator scoring, time bonus, reasoning score, and anti-abuse all apply identically — so skills built in practice transfer directly to competition.</div>
-</div></section>
+  </section>
 
-<!-- WINNING (light) -->
-<section class="light"><div class="wrap pad">
-  <div class="eyebrow"><span class="line"></span>Winning Conditions</div>
-  <h2 class="sec">Three ways to claim victory</h2>
-  <div class="grid g3" style="margin-top:40px">
-    <div class="lightcard" style="padding:24px"><h3 class="mono" style="font-weight:700;font-size:18px;color:#0f172a">Fastest Catch</h3><p style="margin-top:12px;font-size:14px;color:#475569">The first player to submit a correct judgment wins. Ties broken by highest score.</p></div>
-    <div class="lightcard" style="padding:24px"><h3 class="mono" style="font-weight:700;font-size:18px;color:#0f172a">Highest Score</h3><p style="margin-top:12px;font-size:14px;color:#475569">The player with the highest overall score wins. Ties broken by fastest time.</p></div>
-    <div class="lightcard" style="padding:24px"><h3 class="mono" style="font-weight:700;font-size:18px;color:#0f172a">Fastest After Score</h3><p style="margin-top:12px;font-size:14px;color:#475569">Priority to the first correct player; with no correct catch, ranking falls back to score.</p></div>
-  </div>
-  <p class="big" style="max-width:720px">When no participant satisfies the winning condition, the platform <strong>doesn't invent a winner</strong> — it displays a message that there was no correct identification in that round.</p>
-</div></section>
+  <!-- OVERVIEW -->
+  <section class="divider-top"><div class="wrap pad">
+    <div class="eyebrow c-magenta"><span class="line"></span><span data-i18n="ov_eyebrow"></span></div>
+    <h2 class="sec" data-i18n="ov_title"></h2>
+    <div class="grid g3" style="margin-top:40px">
+      <a href="#/how-it-works" class="card cut-corner border-soft link-card">
+        <div style="font-size:24px" class="c-magenta">◎</div>
+        <h3 style="margin-top:14px;font-size:18px" data-i18n="ov_how_t"></h3>
+        <p data-i18n="ov_how_b"></p>
+        <span class="more" data-i18n="ov_link"></span>
+      </a>
+      <a href="#/features" class="card cut-corner border-soft link-card">
+        <div style="font-size:24px" class="c-amber">⚡</div>
+        <h3 style="margin-top:14px;font-size:18px" data-i18n="ov_feat_t"></h3>
+        <p data-i18n="ov_feat_b"></p>
+        <span class="more" data-i18n="ov_link"></span>
+      </a>
+      <a href="#/arena" class="card cut-corner border-soft link-card">
+        <div style="font-size:24px" class="c-cyan">⚔</div>
+        <h3 style="margin-top:14px;font-size:18px" data-i18n="ov_arena_t"></h3>
+        <p data-i18n="ov_arena_b"></p>
+        <span class="more" data-i18n="ov_link"></span>
+      </a>
+      <a href="#/educators" class="card cut-corner border-soft link-card">
+        <div style="font-size:24px" class="c-green">▦</div>
+        <h3 style="margin-top:14px;font-size:18px" data-i18n="ov_edu_t"></h3>
+        <p data-i18n="ov_edu_b"></p>
+        <span class="more" data-i18n="ov_link"></span>
+      </a>
+      <a href="#/applications" class="card cut-corner border-soft link-card">
+        <div style="font-size:24px" class="c-amber">◍</div>
+        <h3 style="margin-top:14px;font-size:18px" data-i18n="ov_app_t"></h3>
+        <p data-i18n="ov_app_b"></p>
+        <span class="more" data-i18n="ov_link"></span>
+      </a>
+      <a href="#/contact" class="card cut-corner border-soft link-card">
+        <div style="font-size:24px" class="c-magenta">✉</div>
+        <h3 style="margin-top:14px;font-size:18px" data-i18n="ov_contact_t"></h3>
+        <p data-i18n="ov_contact_b"></p>
+        <span class="more" data-i18n="ov_link"></span>
+      </a>
+    </div>
+  </div></section>
 
-<!-- EDUCATORS -->
-<section id="educators" class="divider-top"><div class="wrap pad">
-  <div class="eyebrow c-green"><span class="line"></span>Educator Control Room</div>
-  <h2 class="sec">Seven sections — everything an instructor needs</h2>
-  <div class="grid g3" style="margin-top:40px">
-    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">01</span><h3 style="font-size:18px">Overview</h3></div><p>Players, corpus size, attempts, success rate, radial gauges, donut charts, level distributions, rolling accuracy, and live activity.</p></div>
-    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">02</span><h3 style="font-size:18px">Players</h3></div><p>Per-user detection accuracy, average decision time, false-positive/negative rates, best streak, and performance at levels 4–5.</p></div>
-    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">03</span><h3 style="font-size:18px">Logs</h3></div><p>Up to 400 records, filterable by user, outcome, and email type. Expand for full scoring breakdown, snippets, and reasoning. CSV export.</p></div>
-    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">04</span><h3 style="font-size:18px">Analytics</h3></div><p>Group Awareness Profile, performance by level, decision-time histograms, rolling accuracy, and indicator capture rates.</p></div>
-    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">05</span><h3 style="font-size:18px">Comms</h3></div><p>Broadcast to the group or individuals — info, warning, or critical. Drive challenges, countdowns, and results.</p></div>
-    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">06</span><h3 style="font-size:18px">Corpus</h3></div><p>Create, import, export, and manage training emails and their indicators. Ships with 16+ handcrafted emails (Greek &amp; English).</p></div>
-    <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">07</span><h3 style="font-size:18px">Config</h3></div><p>Choose AI/LLM or deterministic grading. Set provider, model, base URL, and API key (OpenRouter, Ollama, OpenAI-compatible). Run a connection test.</p></div>
-  </div>
-  <div class="grid g2" style="margin-top:48px">
-    <div class="card cut-corner glow-cyan"><h3 style="font-size:24px">Analytics</h3><p style="color:#cbd5e1">Rolling accuracy tracks the last 50 attempts with a window of 10. Indicator capture rates reveal which categories are hardest to recognize.</p><p>Identify patterns — e.g. users who spot attachments easily but miss lookalike domains — then design targeted interventions and measure improvement.</p></div>
-    <div class="card cut-corner glow-amber"><h3 style="font-size:24px">Platform Security</h3><p style="color:#cbd5e1">Role separation between Player and Educator. JWT auth; passwords stored with bcrypt. The educator account is predefined — not open registration.</p><p>LLM provider API keys stay on the server, never exposed to the frontend.</p></div>
-  </div>
-</div></section>
+  <section class="stats"><div class="wrap"><div class="stats-inner">
+    <div><div class="stat-num">5</div><div class="stat-lbl" data-i18n="stat1"></div></div>
+    <div><div class="stat-num">5</div><div class="stat-lbl" data-i18n="stat2"></div></div>
+    <div><div class="stat-num">6</div><div class="stat-lbl" data-i18n="stat3"></div></div>
+    <div><div class="stat-num">9</div><div class="stat-lbl" data-i18n="stat4"></div></div>
+    <div><div class="stat-num">3</div><div class="stat-lbl" data-i18n="stat5"></div></div>
+    <div><div class="stat-num">7</div><div class="stat-lbl" data-i18n="stat6"></div></div>
+  </div></div></section>
 
-<!-- APPLICATIONS -->
-<section id="applications" class="divider-top"><div class="wrap pad">
-  <div class="eyebrow c-amber"><span class="line"></span>Applications</div>
-  <h2 class="sec">Built for the environments that get targeted</h2>
-  <div class="grid g3" style="margin-top:40px">
-    <div class="card cut-corner glow-magenta"><h3 style="font-size:20px">Journalism &amp; News Media</h3><p style="color:#cbd5e1">Emails from sources, colleagues, agencies, organizations, or event organizers. Simulate interview invitations, document deliveries, press releases, cloud-sharing notifications, and suspicious attachments.</p><p style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;font-style:italic">Not to memorize rules — but to critically evaluate communication that initially appears trustworthy.</p></div>
-    <div class="card cut-corner glow-amber"><h3 style="font-size:20px">Office Professionals</h3><p style="color:#cbd5e1">Adapt the corpus to HR, accounting, suppliers, management, Microsoft 365, Google Workspace, invoices, video conferences, bank-detail changes, and supervisor requests.</p><p style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;font-style:italic">Especially important for Business Email Compromise and social engineering.</p></div>
-    <div class="card cut-corner glow-cyan"><h3 style="font-size:20px">Education (Ages 12–18)</h3><p style="color:#cbd5e1">Supports students, cybersecurity clubs, and formal or non-formal programs. Inbox Mission for individual practice, then a Deathmatch Arena for group activity.</p><p style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;font-style:italic">Combines individual learning, feedback, competition, and performance analysis.</p></div>
-  </div>
-</div></section>
-
-<!-- AWARENESS TO RESILIENCE (light) -->
-<section class="light"><div class="wrap pad center" style="max-width:800px;margin:0 auto">
-  <div class="eyebrow" style="justify-content:center"><span class="line"></span>From Awareness to Resilience<span class="line"></span></div>
-  <h2 class="sec">Not a one-time campaign — a continuous capability.</h2>
-  <p class="big" style="margin-left:auto;margin-right:auto">Systematic recording of results lets organizations identify patterns: perhaps users spot suspicious attachments easily but struggle with lookalike domains, or decide too quickly under a sense of urgency. That data drives targeted interventions and measures improvement.</p>
-  <p style="margin-top:24px;font-size:20px;font-weight:700;color:#0f172a">The user is asked to examine a message, identify evidence, assess its reliability, justify the decision, and take responsibility for the final judgment.</p>
-</div></section>
-
-<!-- CONTACT -->
-<section id="contact" class="divider-top"><div class="wrap pad">
-  <div class="eyebrow c-amber"><span class="line"></span>Request a Demo</div>
-  <h2 class="sec">Strengthen the <span class="c-amber">human layer.</span></h2>
-  <p class="lead" style="margin-top:16px">Tell us about your team and we'll tailor a corpus, schedule a walkthrough, and show how PhishGame turns awareness into a practiced skill.</p>
-  <div class="form-grid" style="margin-top:48px">
-    <div>
-      <div class="eyebrow c-cyan"><span class="line"></span>Why teams choose PhishGame</div>
-      <h2 class="sec" style="font-size:24px">A practical training layer between technology and the human.</h2>
-      <div style="margin-top:32px;display:flex;flex-direction:column;gap:16px">
-        <div class="highlight"><span class="arw">▸</span><div><div class="t">Bilingual</div><p style="margin:0;font-size:14px;color:#94a3b8">Full Greek and English support out of the box.</p></div></div>
-        <div class="highlight"><span class="arw">▸</span><div><div class="t">Deployable</div><p style="margin:0;font-size:14px;color:#94a3b8">Adaptable to your user management, retention, and privacy needs.</p></div></div>
-        <div class="highlight"><span class="arw">▸</span><div><div class="t">Measurable</div><p style="margin:0;font-size:14px;color:#94a3b8">Detailed dashboards, CSV/JSON export, and rolling analytics.</p></div></div>
-        <div class="highlight"><span class="arw">▸</span><div><div class="t">Responsive</div><p style="margin:0;font-size:14px;color:#94a3b8">Works from 390px mobile up to desktop, with off-canvas nav.</p></div></div>
+  <!-- PROBLEM TEASER -->
+  <section class="light"><div class="wrap pad">
+    <div class="grid g2" style="align-items:center;gap:48px">
+      <div>
+        <div class="eyebrow"><span class="line"></span><span data-i18n="problem_eyebrow"></span></div>
+        <h2 class="sec" data-i18n="problem_title"></h2>
+        <p class="big" data-i18n="problem_p1"></p>
+        <a href="#/how-it-works" class="mono" style="display:inline-block;margin-top:28px;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.14em;color:#ea580c" data-i18n="problem_card_link"></a>
       </div>
-      <div style="margin-top:40px;border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.05);padding:20px;border-radius:8px">
-        <p class="mono c-cyan" style="text-transform:uppercase;letter-spacing:.18em;font-size:13px">Practice the decision</p>
-        <p style="margin-top:8px;font-size:14px;color:#cbd5e1">The best defense against phishing isn't only knowing the risk. It's having practiced recognizing it.</p>
+      <div class="lightcard">
+        <p class="mono" style="text-transform:uppercase;letter-spacing:.14em;font-size:13px;color:#ea580c" data-i18n="problem_card_label"></p>
+        <p style="margin-top:16px;font-size:23px;font-weight:700;line-height:1.35;color:#0f172a" data-i18n="problem_card_quote"></p>
       </div>
     </div>
+  </div></section>
 
-    <!-- DIRECT CONTACT -->
-    <div>
-      <div class="card cut-corner border-soft" style="background:rgba(13,13,20,.7);padding:32px">
-        <div class="eyebrow c-cyan"><span class="line"></span>Direct Contact</div>
-        <h3 class="sec" style="font-size:26px;margin-top:16px">Write to us — no forms, no queues.</h3>
-        <p style="margin-top:16px;font-size:15px;color:#94a3b8;line-height:1.6">Email is the fastest way to reach us. Describe your team and threat landscape, and we will tailor a corpus and arrange a walkthrough. Collaboration and investment enquiries are also welcome.</p>
-        <a href="mailto:skaragiannis@ionio.gr" class="mail-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
-          skaragiannis@ionio.gr
-        </a>
-        <div style="margin-top:32px;border-top:1px solid rgba(255,255,255,.1);padding-top:24px">
-          <h4 class="mono" style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:#64748b;margin-bottom:12px">Also find us on</h4>
-          <div class="socials">
-            <a href="https://github.com/dr-skaragiannis" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.12 0 1.53-.01 2.77-.01 3.15 0 .31.21.67.8.56A10.51 10.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
-            <a href="https://www.linkedin.com/in/stylianos-karagiannis/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg></a>
-            <a href="https://www.instagram.com/s.karagiannis.dr/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>
-            <a href="https://www.facebook.com/Karagiannis.Stylianos/" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.08 5.66 21.24 10.44 22v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.49-3.91 3.78-3.91 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.9h-2.34V22c4.78-.76 8.43-4.92 8.43-9.94Z"/></svg></a>
-          </div>
+  <!-- COMPARISON -->
+  <section class="divider-top"><div class="wrap pad">
+    <div class="eyebrow c-amber"><span class="line"></span><span data-i18n="cmp_eyebrow"></span></div>
+    <h2 class="sec" data-i18n="cmp_title"></h2>
+    <div class="cmp">
+      <div class="row head"><div class="cell l" data-i18n="cmp_h_old"></div><div class="cell r" data-i18n="cmp_h_new"></div></div>
+      <div class="row odd"><div class="cell l" data-i18n="cmp_1a"></div><div class="cell r" data-i18n="cmp_1b"></div></div>
+      <div class="row even"><div class="cell l" data-i18n="cmp_2a"></div><div class="cell r" data-i18n="cmp_2b"></div></div>
+      <div class="row odd"><div class="cell l" data-i18n="cmp_3a"></div><div class="cell r" data-i18n="cmp_3b"></div></div>
+      <div class="row even"><div class="cell l" data-i18n="cmp_4a"></div><div class="cell r" data-i18n="cmp_4b"></div></div>
+      <div class="row odd"><div class="cell l" data-i18n="cmp_5a"></div><div class="cell r" data-i18n="cmp_5b"></div></div>
+      <div class="row even"><div class="cell l" data-i18n="cmp_6a"></div><div class="cell r" data-i18n="cmp_6b"></div></div>
+      <div class="row odd"><div class="cell l" data-i18n="cmp_7a"></div><div class="cell r" data-i18n="cmp_7b"></div></div>
+      <div class="row even"><div class="cell l" data-i18n="cmp_8a"></div><div class="cell r" data-i18n="cmp_8b"></div></div>
+    </div>
+  </div></section>
+
+  <!-- CTA -->
+  <section class="divider-top cyber-grid" style="position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(245,166,35,.08),transparent 50%,rgba(255,43,214,.08));pointer-events:none"></div>
+    <div class="wrap pad center" style="position:relative;max-width:820px;margin:0 auto">
+      <h2 class="sec" data-i18n="cta_title"></h2>
+      <p class="lead" style="margin:20px auto 0" data-i18n="cta_body"></p>
+      <div class="cta-row" style="justify-content:center">
+        <a href="#/contact" class="btn btn-amber cut-corner" data-i18n="hero_cta1"></a>
+        <a href="#/arena" class="btn btn-outline cut-corner" data-i18n="cta_arena"></a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================ HOW IT WORKS ============================ -->
+<div class="page" data-page="how-it-works">
+  <section class="banner cyber-grid">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="wrap banner-inner">
+      <div class="crumbs"><a href="#/" data-i18n="nav_home"></a><span class="sep">/</span><span data-i18n="nav_game"></span><span class="sep">/</span><span data-i18n="nav_how"></span></div>
+      <div class="eyebrow c-magenta"><span class="line"></span><span data-i18n="how_eyebrow"></span></div>
+      <h1 class="banner-title" data-i18n="how_title"></h1>
+      <p class="lead" data-i18n="how_banner_sub"></p>
+    </div>
+  </section>
+
+  <section><div class="wrap pad">
+    <h2 class="sec" data-i18n="how_loop_title"></h2>
+    <div class="grid g5" style="margin-top:40px">
+      <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">01</div><h3 style="margin-top:16px;font-size:16px" data-i18n="how_s1_t"></h3><p data-i18n="how_s1_b"></p></div>
+      <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">02</div><h3 style="margin-top:16px;font-size:16px" data-i18n="how_s2_t"></h3><p data-i18n="how_s2_b"></p></div>
+      <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">03</div><h3 style="margin-top:16px;font-size:16px" data-i18n="how_s3_t"></h3><p data-i18n="how_s3_b"></p></div>
+      <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">04</div><h3 style="margin-top:16px;font-size:16px" data-i18n="how_s4_t"></h3><p data-i18n="how_s4_b"></p></div>
+      <div class="card cut-corner border-soft"><div class="display c-amber" style="font-size:30px;opacity:.7">05</div><h3 style="margin-top:16px;font-size:16px" data-i18n="how_s5_t"></h3><p data-i18n="how_s5_b"></p></div>
+    </div>
+  </div></section>
+
+  <section class="light"><div class="wrap pad">
+    <div class="eyebrow" style="color:#4f46e5"><span class="line"></span><span data-i18n="adaptive_eyebrow"></span></div>
+    <h2 class="sec" data-i18n="adaptive_title"></h2>
+    <p class="big" style="max-width:760px" data-i18n="adaptive_body"></p>
+    <div class="levels">
+      <div class="level"><span class="idx">1</span><div><div class="nm" data-i18n="level1"></div><div class="xp">0 XP</div></div></div>
+      <div class="level"><span class="idx">2</span><div><div class="nm" data-i18n="level2"></div><div class="xp">300 XP</div></div></div>
+      <div class="level"><span class="idx">3</span><div><div class="nm" data-i18n="level3"></div><div class="xp">800 XP</div></div></div>
+      <div class="level"><span class="idx">4</span><div><div class="nm" data-i18n="level4"></div><div class="xp">1600 XP</div></div></div>
+      <div class="level"><span class="idx">5</span><div><div class="nm" data-i18n="level5"></div><div class="xp">3000+ XP</div></div></div>
+    </div>
+  </div></section>
+
+  <section class="divider-top"><div class="wrap pad">
+    <div class="eyebrow c-amber"><span class="line"></span><span data-i18n="scoring_eyebrow"></span></div>
+    <h2 class="sec" data-i18n="scoring_title"></h2>
+    <p class="lead" style="margin-top:16px" data-i18n="scoring_body"></p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:40px">
+      <div class="signal"><div class="name" data-i18n="signal1_n"></div><div class="rule" data-i18n="signal1_r"></div></div>
+      <div class="signal"><div class="name" data-i18n="signal2_n"></div><div class="rule" data-i18n="signal2_r"></div></div>
+      <div class="signal"><div class="name" data-i18n="signal3_n"></div><div class="rule" data-i18n="signal3_r"></div></div>
+      <div class="signal"><div class="name" data-i18n="signal4_n"></div><div class="rule" data-i18n="signal4_r"></div></div>
+      <div class="signal"><div class="name" data-i18n="signal5_n"></div><div class="rule" data-i18n="signal5_r"></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:48px">
+      <div class="card cut-corner glow-magenta"><h3 style="font-size:24px" data-i18n="gate_t"></h3><p style="color:#cbd5e1" data-i18n="gate_p1"></p><p data-i18n="gate_p2"></p></div>
+      <div class="card cut-corner glow-amber"><h3 style="font-size:24px" data-i18n="combo_t"></h3><p style="color:#cbd5e1" data-i18n="combo_p1"></p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px"><span class="chip chip-amber">1 ×1.0</span><span class="chip chip-amber">2 ×1.25</span><span class="chip chip-amber">3 ×1.5</span><span class="chip chip-amber">4 ×1.75</span><span class="chip chip-amber">5+ ×2.0</span></div><p data-i18n="combo_p2"></p></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- ============================ FEATURES ============================ -->
+<div class="page" data-page="features">
+  <section class="banner cyber-grid">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="wrap banner-inner">
+      <div class="crumbs"><a href="#/" data-i18n="nav_home"></a><span class="sep">/</span><span data-i18n="nav_game"></span><span class="sep">/</span><span data-i18n="nav_features"></span></div>
+      <div class="eyebrow c-cyan"><span class="line"></span><span data-i18n="feat_banner_eyebrow"></span></div>
+      <h1 class="banner-title" data-i18n="feat_banner_title"></h1>
+      <p class="lead" data-i18n="feat_banner_sub"></p>
+    </div>
+  </section>
+
+  <section><div class="wrap pad">
+    <h2 class="sec" data-i18n="ind_title"></h2>
+    <div class="grid g3" style="margin-top:40px">
+      <div class="card cut-corner border-soft"><code class="k c-magenta">fake_domain</code><p data-i18n="ind_1"></p></div>
+      <div class="card cut-corner border-soft"><code class="k c-amber">credential_request</code><p data-i18n="ind_2"></p></div>
+      <div class="card cut-corner border-soft"><code class="k c-cyan">suspicious_link</code><p data-i18n="ind_3"></p></div>
+      <div class="card cut-corner border-soft"><code class="k c-magenta">urgency</code><p data-i18n="ind_4"></p></div>
+      <div class="card cut-corner border-soft"><code class="k c-amber">attachment_risk</code><p data-i18n="ind_5"></p></div>
+      <div class="card cut-corner border-soft"><code class="k c-cyan">minor_hint</code><p data-i18n="ind_6"></p></div>
+    </div>
+    <p class="lead" style="margin-top:32px" data-i18n="ind_edutips"></p>
+  </div></section>
+
+  <section class="divider-top" style="background:var(--zc-panel)"><div class="wrap pad">
+    <div class="eyebrow c-amber"><span class="line"></span><span data-i18n="achv_eyebrow"></span></div>
+    <h2 class="sec" data-i18n="achv_title"></h2>
+    <div class="grid g3" style="margin-top:40px">
+      <div class="achv"><span class="star">★</span><div><code class="k c-white">first_blood</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8" data-i18n="achv_1"></p></div></div>
+      <div class="achv"><span class="star">★</span><div><code class="k c-white">perfect_catch</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8" data-i18n="achv_2"></p></div></div>
+      <div class="achv"><span class="star">★</span><div><code class="k c-white">fast_hand</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8" data-i18n="achv_3"></p></div></div>
+      <div class="achv"><span class="star">★</span><div><code class="k c-white">streak_master</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8" data-i18n="achv_4"></p></div></div>
+      <div class="achv"><span class="star">★</span><div><code class="k c-white">indicator_sniper</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8" data-i18n="achv_5"></p></div></div>
+      <div class="achv"><span class="star">★</span><div><code class="k c-white">phisher_tracker</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8" data-i18n="achv_6"></p></div></div>
+      <div class="achv"><span class="star">★</span><div><code class="k c-white">level_master</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8" data-i18n="achv_7"></p></div></div>
+      <div class="achv"><span class="star">★</span><div><code class="k c-white">no_false_positive</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8" data-i18n="achv_8"></p></div></div>
+      <div class="achv"><span class="star">★</span><div><code class="k c-white">combo_king</code><p style="margin:4px 0 0;font-size:12px;color:#94a3b8" data-i18n="achv_9"></p></div></div>
+    </div>
+  </div></section>
+
+  <section class="light"><div class="wrap pad">
+    <div class="grid g2" style="align-items:center;gap:48px">
+      <div>
+        <div class="eyebrow" style="color:#4f46e5"><span class="line"></span><span data-i18n="deck_eyebrow"></span></div>
+        <h2 class="sec" data-i18n="deck_title"></h2>
+        <p class="big" data-i18n="deck_p1"></p>
+        <p class="big" data-i18n="deck_p2"></p>
+      </div>
+      <div class="lightcard">
+        <p class="mono" style="text-transform:uppercase;letter-spacing:.14em;font-size:13px;color:#4f46e5" data-i18n="radar_label"></p>
+        <div class="radar-grid">
+          <div class="radar-cell" data-i18n="radar_1"></div><div class="radar-cell" data-i18n="radar_2"></div>
+          <div class="radar-cell" data-i18n="radar_3"></div><div class="radar-cell" data-i18n="radar_4"></div>
+          <div class="radar-cell" data-i18n="radar_5"></div><div class="radar-cell" data-i18n="radar_6"></div>
+        </div>
+        <p style="margin-top:24px;font-size:14px;color:#64748b" data-i18n="radar_body"></p>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="divider-top"><div class="wrap pad">
+    <div class="grid g3">
+      <div class="card cut-corner glow-cyan"><h3 style="font-size:24px" data-i18n="comms_t"></h3><p style="color:#cbd5e1" data-i18n="comms_p1"></p><p data-i18n="comms_p2"></p></div>
+      <div class="card cut-corner glow-amber"><h3 style="font-size:24px" data-i18n="speed_t"></h3><p style="color:#cbd5e1" data-i18n="speed_p1"></p><p data-i18n="speed_p2"></p></div>
+      <div class="card cut-corner border-soft"><h3 style="font-size:24px" data-i18n="sound_t"></h3><p style="color:#cbd5e1" data-i18n="sound_p1"></p><p data-i18n="sound_p2"></p></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- ============================ ARENA ============================ -->
+<div class="page" data-page="arena">
+  <section class="banner cyber-grid">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="wrap banner-inner">
+      <div class="crumbs"><a href="#/" data-i18n="nav_home"></a><span class="sep">/</span><span data-i18n="nav_game"></span><span class="sep">/</span><span data-i18n="nav_arena"></span></div>
+      <div class="eyebrow c-magenta"><span class="line"></span><span data-i18n="arena_eyebrow"></span></div>
+      <h1 class="banner-title" data-i18n="arena_title"></h1>
+      <p class="lead" data-i18n="arena_body"></p>
+    </div>
+  </section>
+
+  <section><div class="wrap pad">
+    <h2 class="sec" data-i18n="arena_modes_title"></h2>
+    <div class="grid g3" style="margin-top:40px">
+      <div class="card cut-corner glow-magenta"><h3 style="font-size:22px" data-i18n="mode1_t"></h3><p style="color:#cbd5e1" data-i18n="mode1_b"></p></div>
+      <div class="card cut-corner glow-amber"><h3 style="font-size:22px" data-i18n="mode2_t"></h3><p style="color:#cbd5e1" data-i18n="mode2_b"></p></div>
+      <div class="card cut-corner glow-cyan"><h3 style="font-size:22px" data-i18n="mode3_t"></h3><p style="color:#cbd5e1" data-i18n="mode3_b"></p></div>
+    </div>
+    <div class="grid g2" style="margin-top:48px;gap:48px">
+      <div>
+        <div class="eyebrow c-cyan"><span class="line"></span><span data-i18n="dur_eyebrow"></span></div>
+        <h2 class="sec" style="font-size:26px" data-i18n="dur_title"></h2>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:24px">
+          <span class="chip chip-cyan">30s</span><span class="chip chip-cyan">1 min</span><span class="chip chip-cyan">2 min</span><span class="chip chip-cyan">5 min</span><span class="chip chip-cyan" data-i18n="dur_custom"></span>
+        </div>
+        <p style="margin-top:24px;font-size:14px;color:#94a3b8;line-height:1.65" data-i18n="dur_body"></p>
+      </div>
+      <div>
+        <div class="eyebrow c-magenta"><span class="line"></span><span data-i18n="part_eyebrow"></span></div>
+        <h2 class="sec" style="font-size:26px" data-i18n="part_title"></h2>
+        <div style="margin-top:24px;display:flex;flex-direction:column;gap:16px">
+          <div class="card border-soft" style="padding:20px"><div class="mono" style="font-weight:700;font-size:14px;color:var(--zc-magenta)" data-i18n="part_mand_t"></div><p style="margin-top:8px" data-i18n="part_mand_b"></p></div>
+          <div class="card border-soft" style="padding:20px"><div class="mono" style="font-weight:700;font-size:14px;color:var(--zc-amber)" data-i18n="part_opt_t"></div><p style="margin-top:8px" data-i18n="part_opt_b"></p></div>
         </div>
       </div>
     </div>
-  </div>
-</div></section>
+    <div class="note"><span class="mono" style="font-weight:700;color:var(--zc-magenta)" data-i18n="arena_note_lead"></span> <span data-i18n="arena_note_body"></span></div>
+  </div></section>
+
+  <section class="light"><div class="wrap pad">
+    <div class="eyebrow"><span class="line"></span><span data-i18n="win_eyebrow"></span></div>
+    <h2 class="sec" data-i18n="win_title"></h2>
+    <div class="grid g3" style="margin-top:40px">
+      <div class="lightcard" style="padding:24px"><h3 class="mono" style="font-weight:700;font-size:18px;color:#0f172a" data-i18n="win1_t"></h3><p style="margin-top:12px;font-size:14px;color:#475569" data-i18n="win1_b"></p></div>
+      <div class="lightcard" style="padding:24px"><h3 class="mono" style="font-weight:700;font-size:18px;color:#0f172a" data-i18n="win2_t"></h3><p style="margin-top:12px;font-size:14px;color:#475569" data-i18n="win2_b"></p></div>
+      <div class="lightcard" style="padding:24px"><h3 class="mono" style="font-weight:700;font-size:18px;color:#0f172a" data-i18n="win3_t"></h3><p style="margin-top:12px;font-size:14px;color:#475569" data-i18n="win3_b"></p></div>
+    </div>
+    <p class="big" style="max-width:800px" data-i18n="win_footer"></p>
+  </div></section>
+</div>
+
+<!-- ============================ EDUCATORS ============================ -->
+<div class="page" data-page="educators">
+  <section class="banner cyber-grid">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="wrap banner-inner">
+      <div class="crumbs"><a href="#/" data-i18n="nav_home"></a><span class="sep">/</span><span data-i18n="nav_educators"></span></div>
+      <div class="eyebrow c-green"><span class="line"></span><span data-i18n="edu_eyebrow"></span></div>
+      <h1 class="banner-title" data-i18n="edu_title"></h1>
+      <p class="lead" data-i18n="edu_banner_sub"></p>
+    </div>
+  </section>
+
+  <section><div class="wrap pad">
+    <div class="grid g3" style="margin-top:8px">
+      <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">01</span><h3 style="font-size:18px" data-i18n="edu_1_t"></h3></div><p data-i18n="edu_1_b"></p></div>
+      <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">02</span><h3 style="font-size:18px" data-i18n="edu_2_t"></h3></div><p data-i18n="edu_2_b"></p></div>
+      <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">03</span><h3 style="font-size:18px" data-i18n="edu_3_t"></h3></div><p data-i18n="edu_3_b"></p></div>
+      <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">04</span><h3 style="font-size:18px" data-i18n="edu_4_t"></h3></div><p data-i18n="edu_4_b"></p></div>
+      <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">05</span><h3 style="font-size:18px" data-i18n="edu_5_t"></h3></div><p data-i18n="edu_5_b"></p></div>
+      <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">06</span><h3 style="font-size:18px" data-i18n="edu_6_t"></h3></div><p data-i18n="edu_6_b"></p></div>
+      <div class="card cut-corner border-soft"><div style="display:flex;gap:12px;align-items:baseline"><span class="display c-amber" style="font-size:18px;opacity:.6">07</span><h3 style="font-size:18px" data-i18n="edu_7_t"></h3></div><p data-i18n="edu_7_b"></p></div>
+    </div>
+  </div></section>
+
+  <section class="light"><div class="wrap pad">
+    <div class="grid g2" style="align-items:center;gap:48px">
+      <div>
+        <div class="eyebrow" style="color:#059669"><span class="line"></span><span data-i18n="corpus_eyebrow"></span></div>
+        <h2 class="sec" data-i18n="corpus_title"></h2>
+        <p class="big" data-i18n="corpus_p1"></p>
+        <p class="big" data-i18n="corpus_p2"></p>
+      </div>
+      <div class="lightcard">
+        <p class="mono" style="text-transform:uppercase;letter-spacing:.14em;font-size:13px;color:#059669" data-i18n="llm_label"></p>
+        <p style="margin-top:16px;color:#475569" data-i18n="llm_intro"></p>
+        <ul style="margin-top:16px;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:14px">
+          <li style="display:flex;gap:10px;color:#334155"><span style="color:#059669">▸</span><span data-i18n="llm_1"></span></li>
+          <li style="display:flex;gap:10px;color:#334155"><span style="color:#059669">▸</span><span data-i18n="llm_2"></span></li>
+          <li style="display:flex;gap:10px;color:#334155"><span style="color:#059669">▸</span><span data-i18n="llm_3"></span></li>
+        </ul>
+        <p style="margin-top:16px;font-size:14px;color:#475569" data-i18n="llm_det"></p>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="divider-top" style="background:var(--zc-panel)"><div class="wrap pad">
+    <div class="grid g2">
+      <div class="card cut-corner glow-cyan"><h3 style="font-size:24px" data-i18n="analytics_t"></h3><p style="color:#cbd5e1" data-i18n="analytics_p1"></p><p data-i18n="analytics_p2"></p></div>
+      <div class="card cut-corner glow-amber"><h3 style="font-size:24px" data-i18n="sec_t"></h3><p style="color:#cbd5e1" data-i18n="sec_p1"></p><p data-i18n="sec_p2"></p></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- ============================ APPLICATIONS ============================ -->
+<div class="page" data-page="applications">
+  <section class="banner cyber-grid">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="wrap banner-inner">
+      <div class="crumbs"><a href="#/" data-i18n="nav_home"></a><span class="sep">/</span><span data-i18n="nav_applications"></span></div>
+      <div class="eyebrow c-amber"><span class="line"></span><span data-i18n="app_eyebrow"></span></div>
+      <h1 class="banner-title" data-i18n="app_title"></h1>
+      <p class="lead" data-i18n="app_banner_sub"></p>
+    </div>
+  </section>
+
+  <section><div class="wrap pad">
+    <div class="grid g3" style="margin-top:8px">
+      <div class="card cut-corner glow-magenta"><h3 style="font-size:20px" data-i18n="app1_t"></h3><p style="color:#cbd5e1" data-i18n="app1_b"></p><p style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;font-style:italic" data-i18n="app1_g"></p></div>
+      <div class="card cut-corner glow-amber"><h3 style="font-size:20px" data-i18n="app2_t"></h3><p style="color:#cbd5e1" data-i18n="app2_b"></p><p style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;font-style:italic" data-i18n="app2_g"></p></div>
+      <div class="card cut-corner glow-cyan"><h3 style="font-size:20px" data-i18n="app3_t"></h3><p style="color:#cbd5e1" data-i18n="app3_b"></p><p style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;font-style:italic" data-i18n="app3_g"></p></div>
+    </div>
+  </div></section>
+
+  <section class="light"><div class="wrap pad center" style="max-width:840px;margin:0 auto">
+    <div class="eyebrow" style="justify-content:center"><span class="line"></span><span data-i18n="res_eyebrow"></span><span class="line"></span></div>
+    <h2 class="sec" data-i18n="res_title"></h2>
+    <p class="big" style="margin-left:auto;margin-right:auto" data-i18n="res_body"></p>
+    <p style="margin-top:24px;font-size:20px;font-weight:700;color:#0f172a" data-i18n="res_quote"></p>
+    <div class="cta-row" style="justify-content:center">
+      <a href="#/contact" class="btn btn-amber cut-corner" data-i18n="hero_cta1"></a>
+    </div>
+  </div></section>
+</div>
+
+<!-- ============================ CONTACT ============================ -->
+<div class="page" data-page="contact">
+  <section class="banner cyber-grid">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="wrap banner-inner">
+      <div class="crumbs"><a href="#/" data-i18n="nav_home"></a><span class="sep">/</span><span data-i18n="nav_contact"></span></div>
+      <div class="eyebrow c-amber"><span class="line"></span><span data-i18n="contact_eyebrow"></span></div>
+      <h1 class="banner-title" data-i18n="contact_title"></h1>
+      <p class="lead" data-i18n="contact_body"></p>
+    </div>
+  </section>
+
+  <section><div class="wrap pad">
+    <div class="form-grid">
+      <div>
+        <div class="eyebrow c-cyan"><span class="line"></span><span data-i18n="contact_why_eyebrow"></span></div>
+        <h2 class="sec" style="font-size:24px" data-i18n="contact_why_title"></h2>
+        <div style="margin-top:32px;display:flex;flex-direction:column;gap:16px">
+          <div class="highlight"><span class="arw">▸</span><div><div class="t" data-i18n="hl1_t"></div><p style="margin:0;font-size:14px;color:#94a3b8" data-i18n="hl1_b"></p></div></div>
+          <div class="highlight"><span class="arw">▸</span><div><div class="t" data-i18n="hl2_t"></div><p style="margin:0;font-size:14px;color:#94a3b8" data-i18n="hl2_b"></p></div></div>
+          <div class="highlight"><span class="arw">▸</span><div><div class="t" data-i18n="hl3_t"></div><p style="margin:0;font-size:14px;color:#94a3b8" data-i18n="hl3_b"></p></div></div>
+          <div class="highlight"><span class="arw">▸</span><div><div class="t" data-i18n="hl4_t"></div><p style="margin:0;font-size:14px;color:#94a3b8" data-i18n="hl4_b"></p></div></div>
+        </div>
+        <div style="margin-top:40px;border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.05);padding:20px;border-radius:8px">
+          <p class="mono c-cyan" style="text-transform:uppercase;letter-spacing:.14em;font-size:13px" data-i18n="contact_quote_label"></p>
+          <p style="margin-top:8px;font-size:14px;color:#cbd5e1" data-i18n="contact_quote_body"></p>
+        </div>
+      </div>
+
+      <div class="contact-card cut-corner glow-cyan">
+        <h3 data-i18n="contact_connect_title"></h3>
+        <p class="sub" data-i18n="contact_connect_body"></p>
+
+        <a class="contact-email" href="mailto:skaragiannis@ionio.gr">
+          <span class="ic">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </span>
+          <span>
+            <span class="cap" data-i18n="contact_email_caption"></span>
+            <span class="addr">skaragiannis@ionio.gr</span>
+          </span>
+        </a>
+
+        <p class="social-label" data-i18n="contact_follow"></p>
+        <div class="social-row">
+          <a class="social-ic s-gh" href="https://github.com/dr-skaragiannis" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="social-ic s-li" href="https://www.linkedin.com/in/stylianos-karagiannis/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a class="social-ic s-ig" href="https://www.instagram.com/s.karagiannis.dr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+          <a class="social-ic s-fb" href="https://www.facebook.com/Karagiannis.Stylianos/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+</main>
 
 <!-- FOOTER -->
 <footer>
   <div class="wrap foot-grid">
     <div>
-      <a href="#home" class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z"/></svg><span class="c-white">ZEROCROWD</span><span class="c-amber">//</span><span class="c-magenta">PHISHGAME</span></a>
-      <p style="margin-top:16px;max-width:360px;font-size:14px;line-height:1.6;color:#94a3b8">Practice the decision. Strengthen the human layer. A gamified cybersecurity education platform that trains real phishing recognition skills — not just awareness.</p>
+      <a href="#/" class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z"/></svg><span class="c-white">ZEROCROWD</span><span class="c-amber">//</span><span class="c-magenta">PHISHGAME</span></a>
+      <p style="margin-top:16px;max-width:380px;font-size:14px;line-height:1.65;color:#94a3b8" data-i18n="foot_tagline"></p>
       <p class="mono c-cyan" style="margin-top:24px;font-size:11px;text-transform:uppercase;letter-spacing:.3em">Play . Learn . Defend</p>
-      <div class="socials foot-socials">
-        <a href="mailto:skaragiannis@ionio.gr" aria-label="Email" title="skaragiannis@ionio.gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>
-        <a href="https://github.com/dr-skaragiannis" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.12 0 1.53-.01 2.77-.01 3.15 0 .31.21.67.8.56A10.51 10.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></a>
-        <a href="https://www.linkedin.com/in/stylianos-karagiannis/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg></a>
-        <a href="https://www.instagram.com/s.karagiannis.dr/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>
-        <a href="https://www.facebook.com/Karagiannis.Stylianos/" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.08 5.66 21.24 10.44 22v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.49-3.91 3.78-3.91 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.9h-2.34V22c4.78-.76 8.43-4.92 8.43-9.94Z"/></svg></a>
+      <div class="social-row foot-social">
+        <a class="social-ic s-em" href="mailto:skaragiannis@ionio.gr" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+        <a class="social-ic s-gh" href="https://github.com/dr-skaragiannis" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+        <a class="social-ic s-li" href="https://www.linkedin.com/in/stylianos-karagiannis/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a class="social-ic s-ig" href="https://www.instagram.com/s.karagiannis.dr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+        <a class="social-ic s-fb" href="https://www.facebook.com/Karagiannis.Stylianos/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
       </div>
     </div>
-    <div class="foot"><h4>Platform</h4><ul><li><a href="#how">How It Works</a></li><li><a href="#features">Features</a></li><li><a href="#arena">Deathmatch Arena</a></li><li><a href="#educators">Educator Control Room</a></li></ul></div>
-    <div class="foot"><h4>Company</h4><ul><li><a href="#applications">Applications</a></li><li><a href="#contact">Request a Demo</a></li><li><a href="mailto:skaragiannis@ionio.gr">skaragiannis@ionio.gr</a></li><li><a href="https://github.com/dr-skaragiannis" target="_blank" rel="noopener">GitHub</a></li></ul></div>
+    <div class="foot">
+      <h4 data-i18n="foot_platform"></h4>
+      <ul>
+        <li><a href="#/how-it-works" data-i18n="nav_how"></a></li>
+        <li><a href="#/features" data-i18n="nav_features"></a></li>
+        <li><a href="#/arena" data-i18n="nav_arena"></a></li>
+        <li><a href="#/educators" data-i18n="nav_educators"></a></li>
+      </ul>
+    </div>
+    <div class="foot">
+      <h4 data-i18n="foot_company"></h4>
+      <ul>
+        <li><a href="#/applications" data-i18n="nav_applications"></a></li>
+        <li><a href="#/contact" data-i18n="nav_contact"></a></li>
+        <li><a href="#/contact" data-i18n="foot_security"></a></li>
+      </ul>
+    </div>
   </div>
   <div class="wrap"><div class="foot-bottom">
-    <p>© <span id="yr"></span> ZeroCrowd PhishGame. Better awareness. Stronger defenses.</p>
-    <p class="mono" style="text-transform:uppercase;letter-spacing:.18em">Think · Analyze · Decide · Stay Safe</p>
+    <p>© <span id="yr"></span> <span data-i18n="foot_copy"></span></p>
+    <p class="mono" style="text-transform:uppercase;letter-spacing:.14em" data-i18n="foot_motto"></p>
   </div></div>
 </footer>
 
 <script>
-  document.getElementById('yr').textContent = new Date().getFullYear();
+/* ===================== CONTENT DICTIONARY ===================== */
+var I18N = {
+  en: {
+    metaDesc: "An interactive training and assessment environment for phishing-recognition skills: realistic email simulation, adaptive difficulty, multidimensional scoring, and competitive real-time assessment.",
 
-  function toggleMenu(){
-    var m = document.getElementById('mobNav');
-    var icon = document.getElementById('menuIcon');
-    var open = m.classList.toggle('open');
-    icon.innerHTML = open ? '<path d="M6 6l12 12M6 18L18 6"/>' : '<path d="M4 7h16M4 12h16M4 17h16"/>';
-  }
-  function closeMenu(){
-    document.getElementById('mobNav').classList.remove('open');
-    document.getElementById('menuIcon').innerHTML = '<path d="M4 7h16M4 12h16M4 17h16"/>';
-  }
+    nav_home: "Home", nav_game: "The Game",
+    nav_how: "How It Works", nav_features: "Features", nav_arena: "Arena",
+    nav_educators: "Educators", nav_applications: "Applications", nav_contact: "Contact",
+    nav_cta: "Request Demo",
 
-  // Active nav highlight on scroll
-  var navLinks = Array.prototype.slice.call(document.querySelectorAll('nav.desktop a, nav.mobile a'));
-  var sections = ['home','how','features','arena','educators','applications','contact'];
-  window.addEventListener('scroll', function(){
-    var pos = window.scrollY + 120, current = 'home';
-    sections.forEach(function(id){
-      var el = document.getElementById(id);
-      if (el && el.offsetTop <= pos) current = id;
-    });
-    navLinks.forEach(function(a){
-      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-    });
+    hero_title: "Analyse the message. Recognise the phishing.",
+    hero_lead: "An interactive training environment for phishing recognition. Realistic email simulation across five escalating difficulty tiers: annotate the suspicious elements, justify your assessment, and issue a final judgment — phishing or legitimate.",
+    hero_cta1: "⊕ Request a Demonstration",
+    hero_cta2: "⚙ How It Works",
+
+    ov_eyebrow: "Platform Overview",
+    ov_title: "A complete environment for assessment, practice, and competition",
+    ov_how_t: "The Inbox Mission Method",
+    ov_how_b: "A structured five-stage loop — examine, annotate, justify, declare confidence, and judge — combined with adaptive difficulty and a multidimensional scoring engine.",
+    ov_feat_t: "Indicators, Progression & Feedback",
+    ov_feat_b: "Six indicator categories, nine achievements, the Command Deck with an awareness radar, targeted EduTips, and the live COMMS HUD.",
+    ov_arena_t: "Competitive Training",
+    ov_arena_b: "Deathmatch, Blitz, and Custom modes with timed rounds and live rankings, evaluated by exactly the same engine as individual practice.",
+    ov_edu_t: "Educator Control Room",
+    ov_edu_b: "Seven instructor sections: overview, players, logs, analytics, communications, corpus management, and system configuration.",
+    ov_app_t: "Tailored to Your Sector",
+    ov_app_b: "Corpora designed for journalism and news media, corporate teams, and educational settings, supporting continuous assessment and digital resilience.",
+    ov_contact_t: "Request a Demonstration",
+    ov_contact_b: "Arrange a guided walkthrough and a corpus tailored to the specific communications and threat landscape of your organisation.",
+    ov_link: "Learn more →",
+
+    stat1: "Scoring dimensions", stat2: "Difficulty tiers", stat3: "Indicator categories",
+    stat4: "Achievements", stat5: "Arena modes", stat6: "Educator sections",
+
+    problem_eyebrow: "The Problem",
+    problem_title: "Human judgment is a critical layer of cybersecurity.",
+    problem_p1: "Phishing is among the most significant forms of social engineering, and it exploits a critical characteristic of modern organisations: their daily dependence on electronic communication. Even when an organisation deploys email filtering, endpoint protection, firewalls, and detection systems, the user remains a critical point of decision. Traditional awareness training transmits knowledge, but does not reliably ensure that it can be applied against a genuinely suspicious message.",
+    problem_card_label: "The core pedagogical principle",
+    problem_card_quote: "“Awareness should be transformed into a repeatedly practised skill.”",
+    problem_card_link: "Review the methodology →",
+
+    cmp_eyebrow: "Comparative Advantage",
+    cmp_title: "Traditional training versus ZeroCrowd PhishGame",
+    cmp_h_old: "Traditional Training", cmp_h_new: "ZeroCrowd PhishGame",
+    cmp_1a: "Static presentations", cmp_1b: "Interactive analysis of realistic emails",
+    cmp_2a: "Fixed examples", cmp_2b: "Dynamic scenario generation",
+    cmp_3a: "Correct / incorrect", cmp_3b: "Multidimensional scoring",
+    cmp_4a: "Single difficulty", cmp_4b: "Adaptive levels",
+    cmp_5a: "Periodic awareness", cmp_5b: "Continuous practice",
+    cmp_6a: "General feedback", cmp_6b: "Targeted EduTips",
+    cmp_7a: "Individual assessment", cmp_7b: "Individual and group Arena",
+    cmp_8a: "Theoretical knowledge", cmp_8b: "Practical decision-making",
+
+    cta_title: "The best defence is not only knowing the risk — it is having practised recognising it.",
+    cta_body: "PhishGame functions as a practical training layer between technological defence and the human being who must ultimately decide whether a message is trustworthy.",
+    cta_arena: "⚔ Explore the Arena",
+
+    /* HOW IT WORKS */
+    how_eyebrow: "The Core Experience — Inbox Mission",
+    how_title: "From awareness to a repeatedly practised skill",
+    how_banner_sub: "Rather than merely informing users of the risks, PhishGame places them in the role of an analyst: examine realistic emails, identify the critical elements, evaluate them, justify the decision, and assume responsibility for the final judgment.",
+    how_loop_title: "The five sequential stages of each round",
+    how_s1_t: "Examine the email",
+    how_s1_b: "The system selects a message corresponding to the user's level. The sender, subject, and body are to be examined carefully.",
+    how_s2_t: "Annotate the indicators",
+    how_s2_b: "Any part of the sender, subject, or body may be selected. A popover presents the options Safe or Malicious, and each annotation is recorded as a structured note.",
+    how_s3_t: "Justify the assessment",
+    how_s3_b: "A free-text justification is provided and evaluated either by a Large Language Model or by a deterministic algorithm assessing concept coverage and indicator alignment.",
+    how_s4_t: "Declare confidence",
+    how_s4_b: "Low (×0.5), Medium (×1.0), or High (×1.5). The multiplier is applied to the decision component and affects both gains and losses.",
+    how_s5_t: "Issue the judgment",
+    how_s5_b: "The user selects Phishing or Legitimate and receives immediate feedback: correctly identified indicators, missed indicators, and incorrect annotations.",
+
+    adaptive_eyebrow: "Adaptive Difficulty",
+    adaptive_title: "A five-level progression system",
+    adaptive_body: "Email difficulty is adapted to the user's level. At the initial levels, scenarios contain more overt phishing indicators; at higher levels, more complex messages combine genuine and deceptive characteristics. Users are thus trained progressively to evaluate subtle and conflicting signals rather than obvious attacks alone.",
+    level1: "Beginner", level2: "Apprentice", level3: "Analyst", level4: "Expert", level5: "Master",
+
+    scoring_eyebrow: "Scoring Engine",
+    scoring_title: "Five independent signals",
+    scoring_body: "Performance is not confined to whether the final answer was correct or incorrect; it is derived from a multidimensional engine that rewards the entire decision-making process.",
+    signal1_n: "Decision", signal1_r: "Correct phishing: +100. Correct legitimate: +100. False positive: −60. False negative: −120.",
+    signal2_n: "Indicators", signal2_r: "Correctly identified and classified indicators are rewarded according to their weight; misclassifications and omissions incur corresponding penalties.",
+    signal3_n: "Time", signal3_r: "Correct decision under 10 s: +30. Under 25 s: +15. Incorrect, very fast decision: −20.",
+    signal4_n: "Reasoning", signal4_r: "S_R = 30R − 20(1−R), where R ∈ [0,1], yielding a range from −20 to +30.",
+    signal5_n: "Bonus", signal5_r: "+25 when all malicious indicators have been identified and correctly classified, with no incorrect annotations and a correct final judgment.",
+    gate_t: "Evidence Gate",
+    gate_p1: "A correct final judgment is not, in itself, sufficient to obtain the full score. The user must provide at least one correctly identified piece of evidence, or achieve a reasoning score of at least 0.5.",
+    gate_p2: "Without sufficient evidence, the base reward for a correct decision is limited from 100 to 40 points; penalties for incorrect decisions are not capped. This mechanism discourages the mere guessing of the correct answer.",
+    combo_t: "Combo Multiplier",
+    combo_p1: "Consecutive correct and evidence-supported answers create a combo:",
+    combo_p2: "An incorrect answer resets the combo. A correct answer without sufficient evidence maintains the existing combo but does not increase it. As an anti-abuse measure, selections exceeding 160 characters or 24 words are ignored, and the total reward has a lower bound of −250.",
+
+    /* FEATURES */
+    feat_banner_eyebrow: "Platform Features",
+    feat_banner_title: "Everything required to build digital resilience",
+    feat_banner_sub: "From granular indicator training and achievements to a personal Command Deck, live communications, and records — a complete environment for continuous assessment.",
+    ind_title: "Six categories of phishing indicators",
+    ind_1: "Fake and lookalike domains, character substitutions, and deceptive addresses.",
+    ind_2: "Requests for passwords, PINs, card numbers, and other confidential credentials.",
+    ind_3: "Inspection of the real URL, hover behaviour, URL mismatch, and naked IP addresses.",
+    ind_4: "Artificial urgency and pressure to take immediate action.",
+    ind_5: "Suspicious .zip, .exe, .html files, macros, and other attachments.",
+    ind_6: "Greetings, spelling, signatures, and other secondary indications.",
+    ind_edutips: "User performance across these categories generates EduTips — three concise, targeted educational cards. The weakest category is presented first as “Your Focus”, and two further low-performing categories complete the recommended training.",
+
+    achv_eyebrow: "Achievements & Motivation",
+    achv_title: "Nine core achievements",
+    achv_1: "First correct phishing identification.",
+    achv_2: "High score with complete indicator identification.",
+    achv_3: "Correct decision in under ten seconds.",
+    achv_4: "Five consecutive correct decisions.",
+    achv_5: "Precise identification of indicators.",
+    achv_6: "Ten correct phishing identifications.",
+    achv_7: "Attainment of the fifth level.",
+    achv_8: "A clean run without any false positives.",
+    achv_9: "A combo of at least five.",
+
+    deck_eyebrow: "Command Deck",
+    deck_title: "The user's central control dashboard",
+    deck_p1: "Six KPI cards report experience points, level, accuracy, best streak, average time, and number of achievements. Users may also monitor the relationship between speed and reward, the evolution of accuracy over time, accuracy by level, and the distribution between phishing and legitimate emails. The live leaderboard is updated every seven seconds.",
+    deck_p2: "Each user maintains a personal profile with an avatar, a biography, and statistics.",
+    radar_label: "Awareness Radar — six axes",
+    radar_1: "Detection", radar_2: "Examination", radar_3: "Speed",
+    radar_4: "Attention", radar_5: "Reasoning", radar_6: "Resilience",
+    radar_body: "A six-axis radar chart visualising where the user's human detection layer is strongest and where further practice is required.",
+
+    comms_t: "COMMS HUD",
+    comms_p1: "A live notification and educational communication system. Notifications include activity events, achievements, level-ups, changes in first place, new speed records, instructor messages, automatic hints, score pulses, and challenge notifications.",
+    comms_p2: "The instructor may send messages to the entire group or to specific users, classified as information, warning, or critical notification.",
+    speed_t: "SpeedBoard & Records",
+    speed_p1: "After each round, the SpeedBoard displays the five fastest correct identifications for that specific email.",
+    speed_p2: "The Records area provides a complete history, including level, subject, number of participants, record holder, and the user's best personal time. The global leaderboard ranks the top fifty users by experience points.",
+    sound_t: "Sound Environment",
+    sound_p1: "A complete, locally synthesised soundscape — a deep bass drone, swept low-pass filtering, a noise pad, and a slow pentatonic arpeggio — with no external audio files required.",
+    sound_p2: "Dedicated sound effects accompany selection, submission, success, error, badge, and level-up events. Sound is disabled by default, and the preference is retained between sessions.",
+
+    /* ARENA */
+    arena_eyebrow: "Competitive Real-Time Training",
+    arena_title: "The Deathmatch Arena",
+    arena_body: "The competitive mode transforms a training session into a shared phishing-analysis activity. Only one Arena may be active at any given time; activating a new round automatically terminates the previous one and publishes its results.",
+    arena_modes_title: "Three competitive modes",
+    mode1_t: "Deathmatch",
+    mode1_b: "The instructor selects a difficulty level (or any level). The server selects a specific email from the corresponding pool, and all participants view exactly the same message simultaneously — establishing the conditions for objective comparison.",
+    mode2_t: "Blitz",
+    mode2_b: "Participants work independently within a predefined time window. After each submission, the next email is loaded automatically following a short 2.5-second delay, and each email may be attempted only once. The emphasis is on speed, pattern recognition, and consistency.",
+    mode3_t: "Custom",
+    mode3_b: "Mechanically similar to Deathmatch, but the instructor selects the specific email to be used — particularly useful for connecting the Arena to a specific lesson or incident presented earlier in the training.",
+    dur_eyebrow: "Arena Duration", dur_title: "A timer for every rhythm",
+    dur_custom: "15 s – 60 min custom",
+    dur_body: "The default durations are 30 seconds, 1 minute, 2 minutes, and 5 minutes, while custom durations from 15 seconds to 60 minutes are also supported. The timer remains continuously visible; its visual indication changes as the available time decreases, and the final ten seconds are signalled with a strong warning.",
+    part_eyebrow: "Participation", part_title: "Mandatory or optional",
+    part_mand_t: "Mandatory", part_mand_b: "The Arena overlay appears automatically for participants when the round begins — suitable for organised sessions requiring universal participation.",
+    part_opt_t: "Optional", part_opt_b: "A banner presents the options “Join Deathmatch” or “Not Now”. Declining applies only to the specific round, providing greater flexibility for optional activities.",
+    arena_note_lead: "The same engine, without exception.",
+    arena_note_body: "The Arena employs exactly the same scoring engine as standard play; there are no special Arena multipliers. The Evidence Gate, confidence multiplier, combo multiplier, indicator scoring, time bonus, reasoning score, and anti-abuse mechanisms all operate under identical rules, ensuring that the skill developed in individual practice transfers directly to the competitive activity.",
+    win_eyebrow: "Winning Conditions", win_title: "Three ways to determine the winner",
+    win1_t: "Fastest Catch", win1_b: "The winner is the first player to submit a correct judgment. In the event of a tie, the highest score prevails.",
+    win2_t: "Highest Score", win2_b: "The winner is the player with the highest overall score. In the event of a tie, the fastest time prevails.",
+    win3_t: "Fastest After Score", win3_b: "Priority is given to the first correct player; where no correct identification occurs, ranking is based on score.",
+    win_footer: "When no participant satisfies the winning condition, the platform does not invent a winner. Instead, it displays a message indicating that there was no correct identification in that round.",
+
+    /* EDUCATORS */
+    edu_eyebrow: "Educator Control Room",
+    edu_title: "Data-driven awareness programmes",
+    edu_banner_sub: "Beyond individual training, the Control Room provides instructors with live monitoring, corpus authoring, and programme-level analytics.",
+    edu_1_t: "Overview", edu_1_b: "Number of players, corpus size, number of attempts, and success rate, complemented by radial gauges, donut charts, level distributions, rolling accuracy, and live activity.",
+    edu_2_t: "Players", edu_2_b: "Per-user detection accuracy, average decision time, false-positive and false-negative rates, best streak, and performance at the highest levels (4–5).",
+    edu_3_t: "Logs", edu_3_b: "Up to 400 records, filterable by user, outcome, and email type. Each record may be expanded to display the complete scoring breakdown, selected snippets, and reasoning, with export to CSV.",
+    edu_4_t: "Analytics", edu_4_b: "Group Awareness Profile, performance by level, decision-time histograms, rolling accuracy, and indicator capture rates.",
+    edu_5_t: "Comms", edu_5_b: "Broadcast to the group or to individuals — as information, warning, or critical notification — and drive challenges, countdown timers, and results.",
+    edu_6_t: "Corpus", edu_6_b: "Create, generate, import, export, and manage the training emails and their indicators, with validation that every indicator appears verbatim in the message body.",
+    edu_7_t: "Config", edu_7_b: "Select AI/LLM or deterministic grading, and define the provider, model, base URL, and API key, with a connection test.",
+
+    corpus_eyebrow: "Corpus Management",
+    corpus_title: "Author the training emails",
+    corpus_p1: "The corpus is the foundation of every scenario. The initial installation ships with an extensive library of handcrafted emails spanning the full range of difficulty levels. Instructors may additionally generate new emails through the configured provider, or author them manually.",
+    corpus_p2: "During manual authoring, text segments can be converted directly into indicators — each with a label, snippet, category, weight, and SUS or GOOD type. The corpus can be exported and imported, with Replace or Merge modes and duplicate prevention.",
+    llm_label: "Evaluation Configuration",
+    llm_intro: "The justification may be evaluated by an AI/LLM grader or by a deterministic algorithm. The AI mode supports:",
+    llm_1: "OpenRouter",
+    llm_2: "Local models through Ollama",
+    llm_3: "Any compatible OpenAI API endpoint",
+    llm_det: "The deterministic mode requires no network connection and uses concept coverage, indicator alignment, and snippet matching, enabling operation in controlled environments.",
+
+    analytics_t: "Analytics",
+    analytics_p1: "Rolling accuracy allows the group's performance to be monitored across the last fifty attempts using a window of ten, while indicator capture rates reveal which categories are the most difficult to recognise.",
+    analytics_p2: "Systematic recording of results enables the identification of patterns — for example, users who readily recognise suspicious attachments yet struggle with lookalike domains — supporting targeted interventions and the measurement of improvement.",
+    sec_t: "Platform Security",
+    sec_p1: "The platform enforces role separation between Player and Educator. Authentication is based on JWT, and passwords are stored using bcrypt. The educator account is predefined and not open to unrestricted registration, reducing the risk of unauthorised privilege escalation.",
+    sec_p2: "Provider API keys remain on the server and are not exposed to the client. For organisational deployments, the platform can be adapted to requirements regarding user management, data retention, and personal-data protection.",
+
+    /* APPLICATIONS */
+    app_eyebrow: "Applications",
+    app_title: "Built for the environments most frequently targeted",
+    app_banner_sub: "PhishGame adapts to the everyday communication patterns of real teams — from newsrooms to finance departments to classrooms.",
+    app1_t: "Journalism & News Media",
+    app1_b: "Scenarios reflect the daily working environment of a journalist: messages purportedly from sources, colleagues, news agencies, organisations, companies, or event organisers. Interview invitations, document deliveries, press releases, cloud-sharing notifications, and suspicious attachments may all be simulated.",
+    app1_g: "The objective is not to memorise a list of rules, but to develop the ability to critically evaluate digital communication that initially appears trustworthy.",
+    app2_t: "Office Professionals",
+    app2_b: "In a corporate environment, the corpus can be adapted to scenarios involving human resources, accounting, suppliers, management, Microsoft 365, Google Workspace, invoices, video conferences, bank-detail changes, and requests from supervisors.",
+    app2_g: "This approach is particularly important for Business Email Compromise and social-engineering attacks, in which a message may lack the classic spelling or technical errors of simple phishing examples.",
+    app3_t: "Education (Ages 12–18)",
+    app3_b: "The platform supports students, cybersecurity clubs, and formal or non-formal education programmes. In a typical session, the instructor uses Inbox Mission for individual practice and subsequently activates a Deathmatch Arena for a group activity.",
+    app3_g: "In this manner, individual learning, feedback, competition, and performance analysis are combined.",
+    res_eyebrow: "From Awareness to Digital Resilience",
+    res_title: "Not a one-time campaign, but a continuous capability.",
+    res_body: "PhishGame does not treat awareness as an isolated campaign. Systematic recording of results allows organisations to identify patterns and to design targeted interventions, functioning as an environment for the continuous assessment and development of human cybersecurity capabilities.",
+    res_quote: "The user is asked to examine a message, identify the evidence, assess its reliability, justify the decision, and assume responsibility for the final judgment.",
+
+    /* CONTACT */
+    contact_eyebrow: "Contact",
+    contact_title: "Strengthen the human layer.",
+    contact_body: "To arrange a demonstration, a tailored corpus, or a guided walkthrough, please make contact directly by email or through any of the profiles below.",
+    contact_why_eyebrow: "Why organisations choose PhishGame",
+    contact_why_title: "A practical training layer between technological defence and human judgment.",
+    hl1_t: "Adaptable", hl1_b: "The corpus can be tailored to the specific communications and threats of your organisation.",
+    hl2_t: "Secure by design", hl2_b: "Role separation, token-based authentication, and server-side storage of provider credentials.",
+    hl3_t: "Measurable", hl3_b: "Detailed dashboards, CSV/JSON export, and rolling analytics.",
+    hl4_t: "Cross-device", hl4_b: "A consistent interface across mobile, tablet, and desktop.",
+    contact_quote_label: "Practise the decision",
+    contact_quote_body: "The best defence against phishing is not only knowing the risk; it is having practised recognising it.",
+
+    contact_connect_title: "Get in touch",
+    contact_connect_body: "For enquiries about deployments, academic collaboration, or a tailored demonstration, use the following channels.",
+    contact_email_caption: "Email",
+    contact_follow: "Find me online",
+
+    foot_tagline: "Practise the decision. Strengthen the human layer. A gamified cybersecurity education environment that trains genuine phishing-recognition skills — not merely awareness.",
+    foot_platform: "Platform", foot_company: "Organisation",
+    foot_security: "Security & Privacy",
+    foot_copy: "ZeroCrowd PhishGame. Better awareness. Stronger defences.",
+    foot_motto: "Think · Analyse · Decide · Stay Safe"
+  },
+
+  el: {
+    metaDesc: "Ένα διαδραστικό περιβάλλον εκπαίδευσης και αξιολόγησης δεξιοτήτων αναγνώρισης phishing: προσομοίωση ρεαλιστικών μηνυμάτων, προσαρμοστική δυσκολία, πολυδιάστατη βαθμολόγηση και ανταγωνιστική αξιολόγηση σε πραγματικό χρόνο.",
+
+    nav_home: "Αρχική", nav_game: "Το Παιχνίδι",
+    nav_how: "Πώς λειτουργεί", nav_features: "Δυνατότητες", nav_arena: "Arena",
+    nav_educators: "Εκπαιδευτή", nav_applications: "Εφαρμογές", nav_contact: "Επικοινωνία",
+    nav_cta: "Αίτημα επίδειξης",
+
+    hero_title: "Ανάλυσε το μήνυμα. Αναγνώρισε το phishing.",
+    hero_lead: "Ένα διαδραστικό περιβάλλον εκπαίδευσης για την αναγνώριση phishing. Προσομοίωση ρεαλιστικών μηνυμάτων σε πέντε κλιμακούμενα επίπεδα δυσκολίας: επισήμανε τα ύποπτα στοιχεία, τεκμηρίωσε την αξιολόγησή σου και διατύπωσε την τελική κρίση — phishing ή νόμιμο.",
+    hero_cta1: "⊕ Αίτημα επίδειξης",
+    hero_cta2: "⚙ Πώς λειτουργεί",
+
+    ov_eyebrow: "Επισκόπηση πλατφόρμας",
+    ov_title: "Ένα ολοκληρωμένο περιβάλλον αξιολόγησης, εξάσκησης και ανταγωνισμού",
+    ov_how_t: "Η μέθοδος Inbox Mission",
+    ov_how_b: "Μια δομημένη διαδικασία πέντε σταδίων — εξέταση, επισήμανση, τεκμηρίωση, δήλωση εμπιστοσύνης και κρίση — σε συνδυασμό με προσαρμοστική δυσκολία και πολυδιάστατη μηχανή βαθμολόγησης.",
+    ov_feat_t: "Δείκτες, πρόοδος και ανατροφοδότηση",
+    ov_feat_b: "Έξι κατηγορίες δεικτών, εννέα επιτεύγματα, το Command Deck με ραντάρ ευαισθητοποίησης, στοχευμένα EduTips και το ζωντανό COMMS HUD.",
+    ov_arena_t: "Ανταγωνιστική εκπαίδευση",
+    ov_arena_b: "Λειτουργίες Deathmatch, Blitz και Custom με χρονομετρημένους γύρους και ζωντανές κατατάξεις, με βαθμολόγηση από την ίδια μηχανή με την ατομική εξάσκηση.",
+    ov_edu_t: "Πίνακας Ελέγχου Εκπαιδευτή",
+    ov_edu_b: "Επτά ενότητες για τον εκπαιδευτή: επισκόπηση, παίκτες, καταγραφές, analytics, επικοινωνία, διαχείριση corpus και ρυθμίσεις συστήματος.",
+    ov_app_t: "Προσαρμοσμένο στον τομέα σας",
+    ov_app_b: "Corpora σχεδιασμένα για τη δημοσιογραφία και τα ΜΜΕ, εταιρικές ομάδες και εκπαιδευτικά περιβάλλοντα, υποστηρίζοντας συνεχή αξιολόγηση και ψηφιακή ανθεκτικότητα.",
+    ov_contact_t: "Αίτημα επίδειξης",
+    ov_contact_b: "Οργανώστε μια καθοδηγούμενη παρουσίαση και ένα corpus προσαρμοσμένο στις ιδιαίτερες επικοινωνίες και το τοπίο απειλών του οργανισμού σας.",
+    ov_link: "Μάθετε περισσότερα →",
+
+    stat1: "Διαστάσεις βαθμολόγησης", stat2: "Επίπεδα δυσκολίας", stat3: "Κατηγορίες δεικτών",
+    stat4: "Επιτεύγματα", stat5: "Λειτουργίες Arena", stat6: "Ενότητες εκπαιδευτή",
+
+    problem_eyebrow: "Το πρόβλημα",
+    problem_title: "Η ανθρώπινη κρίση αποτελεί κρίσιμο επίπεδο κυβερνοασφάλειας.",
+    problem_p1: "Το phishing συγκαταλέγεται στις σημαντικότερες μορφές κοινωνικής μηχανικής και αξιοποιεί ένα κρίσιμο χαρακτηριστικό των σύγχρονων οργανισμών: την καθημερινή τους εξάρτηση από την ηλεκτρονική επικοινωνία. Ακόμη και όταν ένας οργανισμός διαθέτει φιλτράρισμα email, προστασία τερματικών, τείχη προστασίας και συστήματα ανίχνευσης, ο χρήστης παραμένει κρίσιμο σημείο λήψης απόφασης. Η παραδοσιακή εκπαίδευση μεταφέρει γνώσεις, χωρίς όμως να διασφαλίζει αξιόπιστα ότι μπορούν να εφαρμοστούν απέναντι σε ένα πραγματικά ύποπτο μήνυμα.",
+    problem_card_label: "Η βασική παιδαγωγική αρχή",
+    problem_card_quote: "«Η ευαισθητοποίηση πρέπει να μετατρέπεται σε επαναλαμβανόμενη, εξασκημένη δεξιότητα.»",
+    problem_card_link: "Δείτε τη μεθοδολογία →",
+
+    cmp_eyebrow: "Συγκριτικό πλεονέκτημα",
+    cmp_title: "Παραδοσιακή εκπαίδευση έναντι ZeroCrowd PhishGame",
+    cmp_h_old: "Παραδοσιακή εκπαίδευση", cmp_h_new: "ZeroCrowd PhishGame",
+    cmp_1a: "Στατικές παρουσιάσεις", cmp_1b: "Διαδραστική ανάλυση ρεαλιστικών email",
+    cmp_2a: "Σταθερά παραδείγματα", cmp_2b: "Δυναμική δημιουργία σεναρίων",
+    cmp_3a: "Σωστό / λάθος", cmp_3b: "Πολυδιάστατη βαθμολόγηση",
+    cmp_4a: "Ενιαία δυσκολία", cmp_4b: "Προσαρμοστικά επίπεδα",
+    cmp_5a: "Περιοδική ευαισθητοποίηση", cmp_5b: "Συνεχής εξάσκηση",
+    cmp_6a: "Γενική ανατροφοδότηση", cmp_6b: "Στοχευμένα EduTips",
+    cmp_7a: "Ατομική αξιολόγηση", cmp_7b: "Ατομική και ομαδική Arena",
+    cmp_8a: "Θεωρητική γνώση", cmp_8b: "Πρακτική λήψη απόφασης",
+
+    cta_title: "Η καλύτερη άμυνα δεν είναι μόνο η γνώση του κινδύνου — είναι η εξάσκηση στην αναγνώρισή του.",
+    cta_body: "Το PhishGame λειτουργεί ως ένα πρακτικό επίπεδο εκπαίδευσης ανάμεσα στην τεχνολογική άμυνα και στον άνθρωπο που τελικά καλείται να αποφασίσει αν ένα μήνυμα είναι αξιόπιστο.",
+    cta_arena: "⚔ Εξερευνήστε την Arena",
+
+    /* HOW IT WORKS */
+    how_eyebrow: "Η βασική εμπειρία — Inbox Mission",
+    how_title: "Από την ευαισθητοποίηση σε μια επαναλαμβανόμενα εξασκημένη δεξιότητα",
+    how_banner_sub: "Αντί απλώς να ενημερώνει τους χρήστες για τους κινδύνους, το PhishGame τους τοποθετεί στον ρόλο του αναλυτή: εξετάζουν ρεαλιστικά μηνύματα, εντοπίζουν τα κρίσιμα στοιχεία, τα αξιολογούν, τεκμηριώνουν την απόφασή τους και αναλαμβάνουν την ευθύνη της τελικής κρίσης.",
+    how_loop_title: "Τα πέντε διαδοχικά στάδια κάθε γύρου",
+    how_s1_t: "Εξέταση του email",
+    how_s1_b: "Το σύστημα επιλέγει ένα μήνυμα που αντιστοιχεί στο επίπεδο του χρήστη. Ο αποστολέας, το θέμα και το σώμα εξετάζονται προσεκτικά.",
+    how_s2_t: "Επισήμανση δεικτών",
+    how_s2_b: "Οποιοδήποτε τμήμα του αποστολέα, του θέματος ή του σώματος μπορεί να επιλεγεί. Ένα popover εμφανίζει τις επιλογές Ασφαλές ή Κακόβουλο και κάθε επισήμανση καταγράφεται ως δομημένη σημείωση.",
+    how_s3_t: "Τεκμηρίωση της αξιολόγησης",
+    how_s3_b: "Παρέχεται αιτιολόγηση ελεύθερου κειμένου, η οποία αξιολογείται είτε από Μεγάλο Γλωσσικό Μοντέλο είτε από ντετερμινιστικό αλγόριθμο που εκτιμά την κάλυψη εννοιών και την ευθυγράμμιση με τους δείκτες.",
+    how_s4_t: "Δήλωση εμπιστοσύνης",
+    how_s4_b: "Χαμηλή (×0,5), Μεσαία (×1,0) ή Υψηλή (×1,5). Ο πολλαπλασιαστής εφαρμόζεται στη συνιστώσα της απόφασης και επηρεάζει τόσο τα κέρδη όσο και τις απώλειες.",
+    how_s5_t: "Διατύπωση της κρίσης",
+    how_s5_b: "Ο χρήστης επιλέγει Phishing ή Νόμιμο και λαμβάνει άμεση ανατροφοδότηση: σωστά εντοπισμένοι δείκτες, δείκτες που παραλείφθηκαν και λανθασμένες επισημάνσεις.",
+
+    adaptive_eyebrow: "Προσαρμοστική δυσκολία",
+    adaptive_title: "Ένα σύστημα προόδου πέντε επιπέδων",
+    adaptive_body: "Η δυσκολία των μηνυμάτων προσαρμόζεται στο επίπεδο του χρήστη. Στα αρχικά επίπεδα τα σενάρια περιλαμβάνουν πιο εμφανείς δείκτες phishing· στα υψηλότερα επίπεδα, πιο σύνθετα μηνύματα συνδυάζουν γνήσια και παραπλανητικά χαρακτηριστικά. Έτσι, οι χρήστες εκπαιδεύονται σταδιακά στην αξιολόγηση λεπτών και αντικρουόμενων σημάτων και όχι μόνο των προφανών επιθέσεων.",
+    level1: "Αρχάριος", level2: "Μαθητευόμενος", level3: "Αναλυτής", level4: "Ειδικός", level5: "Μάστερ",
+
+    scoring_eyebrow: "Μηχανή βαθμολόγησης",
+    scoring_title: "Πέντε ανεξάρτητα σήματα",
+    scoring_body: "Η επίδοση δεν περιορίζεται στο αν η τελική απάντηση ήταν σωστή ή λανθασμένη· προκύπτει από μια πολυδιάστατη μηχανή που επιβραβεύει το σύνολο της διαδικασίας λήψης απόφασης.",
+    signal1_n: "Απόφαση", signal1_r: "Σωστό phishing: +100. Σωστό νόμιμο: +100. False positive: −60. False negative: −120.",
+    signal2_n: "Δείκτες", signal2_r: "Οι σωστά εντοπισμένοι και ταξινομημένοι δείκτες επιβραβεύονται ανάλογα με το βάρος τους· οι λανθασμένες ταξινομήσεις και οι παραλείψεις επιφέρουν αντίστοιχες ποινές.",
+    signal3_n: "Χρόνος", signal3_r: "Σωστή απόφαση κάτω από 10 δευτ.: +30. Κάτω από 25 δευτ.: +15. Λανθασμένη, πολύ γρήγορη απόφαση: −20.",
+    signal4_n: "Αιτιολόγηση", signal4_r: "S_R = 30R − 20(1−R), όπου R ∈ [0,1], με εύρος από −20 έως +30.",
+    signal5_n: "Bonus", signal5_r: "+25 όταν όλοι οι κακόβουλοι δείκτες έχουν εντοπιστεί και ταξινομηθεί σωστά, χωρίς λανθασμένες επισημάνσεις και με σωστή τελική κρίση.",
+    gate_t: "Πύλη Στοιχείων (Evidence Gate)",
+    gate_p1: "Μια σωστή τελική κρίση δεν αρκεί, από μόνη της, για την απόδοση της πλήρους βαθμολογίας. Ο χρήστης πρέπει να παράσχει τουλάχιστον ένα σωστά εντοπισμένο στοιχείο ή να επιτύχει βαθμολογία αιτιολόγησης τουλάχιστον 0,5.",
+    gate_p2: "Χωρίς επαρκή στοιχεία, η βασική ανταμοιβή για μια σωστή απόφαση περιορίζεται από 100 σε 40 μονάδες· οι ποινές για λανθασμένες αποφάσεις δεν περιορίζονται. Ο μηχανισμός αυτός αποθαρρύνει την απλή μαντεψιά της σωστής απάντησης.",
+    combo_t: "Πολλαπλασιαστής Συνδυασμού (Combo)",
+    combo_p1: "Οι διαδοχικές σωστές και τεκμηριωμένες απαντήσεις δημιουργούν ένα combo:",
+    combo_p2: "Μια λανθασμένη απάντηση μηδενίζει το combo. Μια σωστή απάντηση χωρίς επαρκή στοιχεία διατηρεί το υπάρχον combo αλλά δεν το αυξάνει. Ως μέτρο προστασίας από κατάχρηση, επιλογές που υπερβαίνουν τους 160 χαρακτήρες ή τις 24 λέξεις αγνοούνται, ενώ η συνολική ανταμοιβή έχει κατώτατο όριο −250.",
+
+    /* FEATURES */
+    feat_banner_eyebrow: "Δυνατότητες πλατφόρμας",
+    feat_banner_title: "Ό,τι χρειάζεται για την οικοδόμηση ψηφιακής ανθεκτικότητας",
+    feat_banner_sub: "Από την αναλυτική εκπαίδευση δεικτών και τα επιτεύγματα μέχρι το προσωπικό Command Deck, τις ζωντανές επικοινωνίες και τα αρχεία — ένα ολοκληρωμένο περιβάλλον συνεχούς αξιολόγησης.",
+    ind_title: "Έξι κατηγορίες δεικτών phishing",
+    ind_1: "Πλαστοί και παρόμοιοι (lookalike) τομείς, αντικαταστάσεις χαρακτήρων και παραπλανητικές διευθύνσεις.",
+    ind_2: "Αιτήματα για κωδικούς, PIN, αριθμούς καρτών και άλλα εμπιστευτικά διαπιστευτήρια.",
+    ind_3: "Έλεγχος του πραγματικού URL, συμπεριφορά κατά το hover, αναντιστοιχία URL και γυμνές διευθύνσεις IP.",
+    ind_4: "Τεχνητή αίσθηση επείγοντος και πίεση για άμεση ενέργεια.",
+    ind_5: "Ύποπτα αρχεία .zip, .exe, .html, μακροεντολές και άλλα συνημμένα.",
+    ind_6: "Χαιρετισμοί, ορθογραφία, υπογραφές και άλλες δευτερεύουσες ενδείξεις.",
+    ind_edutips: "Η επίδοση του χρήστη στις κατηγορίες αυτές δημιουργεί EduTips — τρεις σύντομες, στοχευμένες εκπαιδευτικές κάρτες. Η ασθενέστερη κατηγορία παρουσιάζεται πρώτη ως «Η εστίασή σου», ενώ δύο ακόμη κατηγορίες με χαμηλή επίδοση συμπληρώνουν την προτεινόμενη εκπαίδευση.",
+
+    achv_eyebrow: "Επιτεύγματα και παρακίνηση",
+    achv_title: "Εννέα βασικά επιτεύγματα",
+    achv_1: "Πρώτη σωστή αναγνώριση phishing.",
+    achv_2: "Υψηλή βαθμολογία με πλήρη εντοπισμό δεικτών.",
+    achv_3: "Σωστή απόφαση σε λιγότερο από δέκα δευτερόλεπτα.",
+    achv_4: "Πέντε συνεχόμενες σωστές αποφάσεις.",
+    achv_5: "Ακριβής εντοπισμός δεικτών.",
+    achv_6: "Δέκα σωστές αναγνωρίσεις phishing.",
+    achv_7: "Επίτευξη του πέμπτου επιπέδου.",
+    achv_8: "Καθαρή διαδρομή χωρίς κανένα false positive.",
+    achv_9: "Combo τουλάχιστον πέντε.",
+
+    deck_eyebrow: "Command Deck",
+    deck_title: "Ο κεντρικός πίνακας ελέγχου του χρήστη",
+    deck_p1: "Έξι κάρτες KPI παρουσιάζουν πόντους εμπειρίας, επίπεδο, ακρίβεια, καλύτερο σερί, μέσο χρόνο και αριθμό επιτευγμάτων. Ο χρήστης μπορεί επίσης να παρακολουθεί τη σχέση ταχύτητας και ανταμοιβής, τη διαχρονική εξέλιξη της ακρίβειας, την ακρίβεια ανά επίπεδο και την κατανομή μεταξύ phishing και νόμιμων μηνυμάτων. Ο ζωντανός πίνακας κατάταξης ενημερώνεται κάθε επτά δευτερόλεπτα.",
+    deck_p2: "Κάθε χρήστης διατηρεί προσωπικό προφίλ με avatar, βιογραφικό και στατιστικά.",
+    radar_label: "Awareness Radar — έξι άξονες",
+    radar_1: "Ανίχνευση", radar_2: "Εξέταση", radar_3: "Ταχύτητα",
+    radar_4: "Προσοχή", radar_5: "Αιτιολόγηση", radar_6: "Ανθεκτικότητα",
+    radar_body: "Ένα εξαξονικό διάγραμμα radar που αποτυπώνει πού είναι ισχυρότερο το ανθρώπινο επίπεδο ανίχνευσης του χρήστη και πού απαιτείται περαιτέρω εξάσκηση.",
+
+    comms_t: "COMMS HUD",
+    comms_p1: "Ένα ζωντανό σύστημα ειδοποιήσεων και εκπαιδευτικής επικοινωνίας. Οι ειδοποιήσεις περιλαμβάνουν συμβάντα δραστηριότητας, επιτεύγματα, ανόδους επιπέδου, αλλαγές στην πρώτη θέση, νέα ρεκόρ ταχύτητας, μηνύματα εκπαιδευτή, αυτόματες υποδείξεις, παλμούς βαθμολογίας και ειδοποιήσεις προκλήσεων.",
+    comms_p2: "Ο εκπαιδευτής μπορεί να στέλνει μηνύματα σε ολόκληρη την ομάδα ή σε συγκεκριμένους χρήστες, χαρακτηρισμένα ως πληροφορία, προειδοποίηση ή κρίσιμη ειδοποίηση.",
+    speed_t: "SpeedBoard και Records",
+    speed_p1: "Μετά από κάθε γύρο, το SpeedBoard εμφανίζει τις πέντε ταχύτερες σωστές αναγνωρίσεις για το συγκεκριμένο email.",
+    speed_p2: "Η περιοχή Records παρέχει πλήρες ιστορικό, με το επίπεδο, το θέμα, τον αριθμό συμμετεχόντων, τον κάτοχο του ρεκόρ και τον καλύτερο προσωπικό χρόνο του χρήστη. Ο παγκόσμιος πίνακας κατάταξης παρουσιάζει τους πενήντα κορυφαίους χρήστες κατά πόντους εμπειρίας.",
+    sound_t: "Ηχητικό περιβάλλον",
+    sound_p1: "Ένα πλήρες, τοπικά συντιθέμενο ηχητικό περιβάλλον — βαθύ bass drone, σαρωμένο φιλτράρισμα χαμηλών συχνοτήτων, noise pad και αργό πεντατονικό arpeggio — χωρίς ανάγκη εξωτερικών αρχείων ήχου.",
+    sound_p2: "Ειδικά ηχητικά εφέ συνοδεύουν την επιλογή, την υποβολή, την επιτυχία, το σφάλμα, το badge και την άνοδο επιπέδου. Ο ήχος είναι απενεργοποιημένος εξ ορισμού και η προτίμηση διατηρείται μεταξύ συνδέσεων.",
+
+    /* ARENA */
+    arena_eyebrow: "Ανταγωνιστική εκπαίδευση σε πραγματικό χρόνο",
+    arena_title: "Η Deathmatch Arena",
+    arena_body: "Η ανταγωνιστική λειτουργία μετατρέπει μια εκπαιδευτική συνεδρία σε κοινή δραστηριότητα ανάλυσης phishing. Μόνο μία Arena μπορεί να είναι ενεργή κάθε στιγμή· η ενεργοποίηση νέου γύρου τερματίζει αυτόματα τον προηγούμενο και δημοσιεύει τα αποτελέσματά του.",
+    arena_modes_title: "Τρεις ανταγωνιστικές λειτουργίες",
+    mode1_t: "Deathmatch",
+    mode1_b: "Ο εκπαιδευτής επιλέγει επίπεδο δυσκολίας (ή οποιοδήποτε επίπεδο). Ο διακομιστής επιλέγει ένα συγκεκριμένο email από την αντίστοιχη δεξαμενή και όλοι οι συμμετέχοντες βλέπουν ταυτόχρονα ακριβώς το ίδιο μήνυμα — δημιουργώντας συνθήκες αντικειμενικής σύγκρισης.",
+    mode2_t: "Blitz",
+    mode2_b: "Οι συμμετέχοντες εργάζονται ανεξάρτητα εντός ενός προκαθορισμένου χρονικού παραθύρου. Μετά από κάθε υποβολή, το επόμενο email φορτώνεται αυτόματα ύστερα από σύντομη καθυστέρηση 2,5 δευτερολέπτων, ενώ κάθε email μπορεί να επιχειρηθεί μόνο μία φορά. Η έμφαση δίνεται στην ταχύτητα, στην αναγνώριση προτύπων και στη συνέπεια.",
+    mode3_t: "Custom",
+    mode3_b: "Μηχανικά παρόμοια με το Deathmatch, αλλά ο εκπαιδευτής επιλέγει ο ίδιος το συγκεκριμένο email — ιδιαίτερα χρήσιμο για τη σύνδεση της Arena με ένα συγκεκριμένο μάθημα ή περιστατικό που παρουσιάστηκε νωρίτερα στην εκπαίδευση.",
+    dur_eyebrow: "Διάρκεια Arena", dur_title: "Ένα χρονόμετρο για κάθε ρυθμό",
+    dur_custom: "15 δευτ. – 60 λεπτά προσαρμοσμένη",
+    dur_body: "Οι προεπιλεγμένες διάρκειες είναι 30 δευτερόλεπτα, 1 λεπτό, 2 λεπτά και 5 λεπτά, ενώ υποστηρίζονται και προσαρμοσμένες διάρκειες από 15 δευτερόλεπτα έως 60 λεπτά. Το χρονόμετρο παραμένει συνεχώς ορατό· η οπτική του ένδειξη μεταβάλλεται καθώς μειώνεται ο διαθέσιμος χρόνος και τα τελευταία δέκα δευτερόλεπτα σηματοδοτούνται με έντονη προειδοποίηση.",
+    part_eyebrow: "Συμμετοχή", part_title: "Υποχρεωτική ή προαιρετική",
+    part_mand_t: "Υποχρεωτική", part_mand_b: "Το overlay της Arena εμφανίζεται αυτόματα στους συμμετέχοντες όταν ξεκινά ο γύρος — κατάλληλο για οργανωμένες συνεδρίες που απαιτούν καθολική συμμετοχή.",
+    part_opt_t: "Προαιρετική", part_opt_b: "Ένα banner παρουσιάζει τις επιλογές «Συμμετοχή στο Deathmatch» ή «Όχι τώρα». Η απόρριψη αφορά μόνο τον συγκεκριμένο γύρο, προσφέροντας μεγαλύτερη ευελιξία σε προαιρετικές δράσεις.",
+    arena_note_lead: "Η ίδια μηχανή, χωρίς εξαίρεση.",
+    arena_note_body: "Η Arena χρησιμοποιεί ακριβώς την ίδια μηχανή βαθμολόγησης με το κανονικό παιχνίδι· δεν υπάρχουν ειδικοί πολλαπλασιαστές Arena. Η Πύλη Στοιχείων, ο πολλαπλασιαστής εμπιστοσύνης, ο πολλαπλασιαστής combo, η βαθμολόγηση δεικτών, το bonus χρόνου, η βαθμολογία αιτιολόγησης και οι μηχανισμοί προστασίας από κατάχρηση λειτουργούν με πανομοιότυπους κανόνες, διασφαλίζοντας ότι η δεξιότητα που αναπτύσσεται στην ατομική εξάσκηση μεταφέρεται απευθείας στην ανταγωνιστική δραστηριότητα.",
+    win_eyebrow: "Συνθήκες νίκης", win_title: "Τρεις τρόποι καθορισμού του νικητή",
+    win1_t: "Ταχύτερο Πιάσιμο", win1_b: "Νικητής είναι ο πρώτος παίκτης που υποβάλλει σωστή κρίση. Σε περίπτωση ισοβαθμίας υπερισχύει η υψηλότερη βαθμολογία.",
+    win2_t: "Υψηλότερη Βαθμολογία", win2_b: "Νικητής είναι ο παίκτης με την υψηλότερη συνολική βαθμολογία. Σε περίπτωση ισοβαθμίας υπερισχύει ο ταχύτερος χρόνος.",
+    win3_t: "Ταχύτερο μετά Βαθμολογία", win3_b: "Προτεραιότητα δίνεται στον πρώτο σωστό παίκτη· όταν δεν υπάρχει σωστή αναγνώριση, η κατάταξη βασίζεται στη βαθμολογία.",
+    win_footer: "Όταν κανένας συμμετέχων δεν ικανοποιεί τη συνθήκη νίκης, η πλατφόρμα δεν επινοεί νικητή. Αντίθετα, εμφανίζει μήνυμα που δηλώνει ότι δεν υπήρξε σωστή αναγνώριση στον συγκεκριμένο γύρο.",
+
+    /* EDUCATORS */
+    edu_eyebrow: "Πίνακας Ελέγχου Εκπαιδευτή",
+    edu_title: "Προγράμματα ευαισθητοποίησης βάσει δεδομένων",
+    edu_banner_sub: "Πέρα από την ατομική εκπαίδευση, ο Πίνακας Ελέγχου προσφέρει στους εκπαιδευτές ζωντανή παρακολούθηση, δημιουργία corpus και αναλυτικά σε επίπεδο προγράμματος.",
+    edu_1_t: "Επισκόπηση", edu_1_b: "Αριθμός παικτών, μέγεθος corpus, αριθμός προσπαθειών και ποσοστό επιτυχίας, σε συνδυασμό με radial gauges, donut charts, κατανομές επιπέδων, rolling accuracy και ζωντανή δραστηριότητα.",
+    edu_2_t: "Παίκτες", edu_2_b: "Ακρίβεια ανίχνευσης ανά χρήστη, μέσος χρόνος απόφασης, ποσοστά false positive και false negative, καλύτερο σερί και επίδοση στα υψηλότερα επίπεδα (4–5).",
+    edu_3_t: "Καταγραφές", edu_3_b: "Έως 400 εγγραφές, με δυνατότητα φιλτραρίσματος ανά χρήστη, αποτέλεσμα και τύπο email. Κάθε εγγραφή μπορεί να επεκταθεί ώστε να εμφανίσει την πλήρη ανάλυση βαθμολογίας, τα επιλεγμένα αποσπάσματα και την αιτιολόγηση, με εξαγωγή σε CSV.",
+    edu_4_t: "Analytics", edu_4_b: "Ομαδικό Awareness Profile, επίδοση ανά επίπεδο, ιστογράμματα χρόνων απόφασης, rolling accuracy και ποσοστά εντοπισμού δεικτών.",
+    edu_5_t: "Επικοινωνία", edu_5_b: "Αποστολή μηνυμάτων στην ομάδα ή σε μεμονωμένους χρήστες — ως πληροφορία, προειδοποίηση ή κρίσιμη ειδοποίηση — και διαχείριση προκλήσεων, χρονομέτρων και αποτελεσμάτων.",
+    edu_6_t: "Corpus", edu_6_b: "Δημιουργία, παραγωγή, εισαγωγή, εξαγωγή και διαχείριση των εκπαιδευτικών email και των δεικτών τους, με επικύρωση ότι κάθε δείκτης εμφανίζεται αυτολεξεί στο σώμα του μηνύματος.",
+    edu_7_t: "Ρυθμίσεις", edu_7_b: "Επιλογή βαθμολόγησης μέσω AI/LLM ή ντετερμινιστικού αλγορίθμου και ορισμός provider, μοντέλου, base URL και API key, με δοκιμή σύνδεσης.",
+
+    corpus_eyebrow: "Διαχείριση Corpus",
+    corpus_title: "Συγγραφή των εκπαιδευτικών email",
+    corpus_p1: "Το corpus αποτελεί τη θεμελιώδη βάση κάθε σεναρίου. Η αρχική εγκατάσταση περιλαμβάνει μια εκτενή βιβλιοθήκη χειροποίητων email που καλύπτει όλο το εύρος δυσκολίας. Οι εκπαιδευτές μπορούν επιπλέον να παράγουν νέα μηνύματα μέσω του διαμορφωμένου παρόχου ή να τα συντάσσουν χειροκίνητα.",
+    corpus_p2: "Κατά τη χειροκίνητη σύνταξη, τμήματα κειμένου μπορούν να μετατραπούν απευθείας σε δείκτες — καθένας με ετικέτα, απόσπασμα, κατηγορία, βάρος και τύπο SUS ή GOOD. Το corpus μπορεί να εξαχθεί και να εισαχθεί, με λειτουργίες Replace ή Merge και αποφυγή διπλοτύπων.",
+    llm_label: "Ρυθμίσεις αξιολόγησης",
+    llm_intro: "Η αιτιολόγηση μπορεί να αξιολογείται από βαθμολογητή AI/LLM ή από ντετερμινιστικό αλγόριθμο. Η λειτουργία AI υποστηρίζει:",
+    llm_1: "OpenRouter",
+    llm_2: "Τοπικά μοντέλα μέσω Ollama",
+    llm_3: "Οποιοδήποτε συμβατό OpenAI API endpoint",
+    llm_det: "Η ντετερμινιστική λειτουργία δεν απαιτεί δικτυακή σύνδεση και χρησιμοποιεί κάλυψη εννοιών, ευθυγράμμιση δεικτών και αντιστοίχιση αποσπασμάτων, επιτρέποντας λειτουργία σε ελεγχόμενα περιβάλλοντα.",
+
+    analytics_t: "Analytics",
+    analytics_p1: "Το rolling accuracy επιτρέπει την παρακολούθηση της επίδοσης της ομάδας στις τελευταίες πενήντα προσπάθειες με παράθυρο δέκα, ενώ τα ποσοστά εντοπισμού δεικτών αποκαλύπτουν ποιες κατηγορίες αναγνωρίζονται δυσκολότερα.",
+    analytics_p2: "Η συστηματική καταγραφή των αποτελεσμάτων επιτρέπει τον εντοπισμό μοτίβων — για παράδειγμα, χρηστών που αναγνωρίζουν εύκολα ύποπτα συνημμένα αλλά δυσκολεύονται με παρόμοια τομείς — υποστηρίζοντας στοχευμένες παρεμβάσεις και τη μέτρηση της βελτίωσης.",
+    sec_t: "Ασφάλεια της πλατφόρμας",
+    sec_p1: "Η πλατφόρμα εφαρμόζει διαχωρισμό ρόλων μεταξύ Παίκτη και Εκπαιδευτή. Η αυθεντικοποίηση βασίζεται σε JWT και οι κωδικοί αποθηκεύονται με bcrypt. Ο λογαριασμός εκπαιδευτή είναι προκαθορισμένος και δεν είναι ανοικτός σε ελεύθερη εγγραφή, περιορίζοντας τον κίνδυνο μη εξουσιοδοτημένης κλιμάκωσης δικαιωμάτων.",
+    sec_p2: "Τα API keys των παρόχων παραμένουν στον διακομιστή και δεν εκτίθενται στον πελάτη. Για οργανωσιακές εγκαταστάσεις, η πλατφόρμα μπορεί να προσαρμοστεί στις απαιτήσεις για τη διαχείριση χρηστών, τη διατήρηση δεδομένων και την προστασία προσωπικών δεδομένων.",
+
+    /* APPLICATIONS */
+    app_eyebrow: "Εφαρμογές",
+    app_title: "Σχεδιασμένο για τα περιβάλλοντα που στοχοποιούνται συχνότερα",
+    app_banner_sub: "Το PhishGame προσαρμόζεται στα καθημερινά πρότυπα επικοινωνίας πραγματικών ομάδων — από τα δημοσιογραφικά μέσα μέχρι τα οικονομικά τμήματα και τις σχολικές τάξεις.",
+    app1_t: "Δημοσιογραφία και ΜΜΕ",
+    app1_b: "Τα σενάρια αντανακλούν την καθημερινότητα ενός δημοσιογράφου: μηνύματα που υποτίθεται ότι προέρχονται από πηγές, συνεργάτες, πρακτορεία ειδήσεων, οργανισμούς, εταιρείες ή διοργανωτές εκδηλώσεων. Μπορούν να προσομοιωθούν προσκλήσεις για συνεντεύξεις, αποστολές εγγράφων, δελτία τύπου, ειδοποιήσεις cloud-sharing και ύποπτα συνημμένα.",
+    app1_g: "Στόχος δεν είναι η απομνημόνευση μιας λίστας κανόνων, αλλά η ανάπτυξη της ικανότητας κριτικής αξιολόγησης μιας ψηφιακής επικοινωνίας που εκ πρώτης όψεως φαίνεται αξιόπιστη.",
+    app2_t: "Επαγγελματίες γραφείου",
+    app2_b: "Σε εταιρικό περιβάλλον, το corpus μπορεί να προσαρμοστεί σε σενάρια που αφορούν ανθρώπινο δυναμικό, λογιστήριο, προμηθευτές, διοίκηση, Microsoft 365, Google Workspace, τιμολόγια, τηλεδιασκέψεις, αλλαγές τραπεζικών στοιχείων και αιτήματα από προϊσταμένους.",
+    app2_g: "Η προσέγγιση αυτή είναι ιδιαίτερα σημαντική για επιθέσεις Business Email Compromise και κοινωνικής μηχανικής, όπου το μήνυμα μπορεί να στερείται των κλασικών ορθογραφικών ή τεχνικών λαθών των απλών παραδειγμάτων phishing.",
+    app3_t: "Εκπαίδευση (ηλικίες 12–18)",
+    app3_b: "Η πλατφόρμα υποστηρίζει μαθητές, λέσχες κυβερνοασφάλειας και προγράμματα τυπικής ή μη τυπικής εκπαίδευσης. Σε μια τυπική συνεδρία, ο εκπαιδευτής χρησιμοποιεί το Inbox Mission για ατομική εξάσκηση και στη συνέχεια ενεργοποιεί μια Deathmatch Arena για ομαδική δραστηριότητα.",
+    app3_g: "Με τον τρόπο αυτό συνδυάζονται η ατομική μάθηση, η ανατροφοδότηση, ο ανταγωνισμός και η ανάλυση επίδοσης.",
+    res_eyebrow: "Από την ευαισθητοποίηση στην ψηφιακή ανθεκτικότητα",
+    res_title: "Όχι μια μεμονωμένη καμπάνια, αλλά μια συνεχής ικανότητα.",
+    res_body: "Το PhishGame δεν αντιμετωπίζει την ευαισθητοποίηση ως μεμονωμένη καμπάνια. Η συστηματική καταγραφή των αποτελεσμάτων επιτρέπει στους οργανισμούς να εντοπίζουν μοτίβα και να σχεδιάζουν στοχευμένες παρεμβάσεις, λειτουργώντας ως περιβάλλον συνεχούς αξιολόγησης και ανάπτυξης των ανθρώπινων ικανοτήτων κυβερνοασφάλειας.",
+    res_quote: "Ο χρήστης καλείται να εξετάσει ένα μήνυμα, να εντοπίσει τα στοιχεία, να αξιολογήσει την αξιοπιστία τους, να τεκμηριώσει την απόφασή του και να αναλάβει την ευθύνη της τελικής κρίσης.",
+
+    /* CONTACT */
+    contact_eyebrow: "Επικοινωνία",
+    contact_title: "Ενισχύστε το ανθρώπινο επίπεδο.",
+    contact_body: "Για να οργανώσετε μια επίδειξη, ένα προσαρμοσμένο corpus ή μια καθοδηγούμενη παρουσίαση, παρακαλούμε επικοινωνήστε απευθείας μέσω email ή μέσω κάποιου από τα παρακάτω προφίλ.",
+    contact_why_eyebrow: "Γιατί οι οργανισμοί επιλέγουν το PhishGame",
+    contact_why_title: "Ένα πρακτικό επίπεδο εκπαίδευσης ανάμεσα στην τεχνολογική άμυνα και την ανθρώπινη κρίση.",
+    hl1_t: "Προσαρμόσιμο", hl1_b: "Το corpus μπορεί να προσαρμοστεί στις ιδιαίτερες επικοινωνίες και απειλές του οργανισμού σας.",
+    hl2_t: "Ασφαλές από σχεδίαση", hl2_b: "Διαχωρισμός ρόλων, αυθεντικοποίηση βάσει tokens και αποθήκευση των διαπιστευτηρίων των παρόχων στον διακομιστή.",
+    hl3_t: "Μετρήσιμο", hl3_b: "Αναλυτικά dashboards, εξαγωγή CSV/JSON και rolling analytics.",
+    hl4_t: "Σε κάθε συσκευή", hl4_b: "Συνεπής διεπαφή σε κινητό, tablet και επιτραπέζιο υπολογιστή.",
+    contact_quote_label: "Εξασκηθείτε στην απόφαση",
+    contact_quote_body: "Η καλύτερη άμυνα απέναντι στο phishing δεν είναι μόνο η γνώση του κινδύνου· είναι η εξάσκηση στην αναγνώρισή του.",
+
+    contact_connect_title: "Επικοινωνήστε",
+    contact_connect_body: "Για ερωτήματα σχετικά με εγκαταστάσεις, ακαδημαϊκή συνεργασία ή προσαρμοσμένη επίδειξη, χρησιμοποιήστε τα παρακάτω κανάλια.",
+    contact_email_caption: "Email",
+    contact_follow: "Βρείτε με online",
+
+    foot_tagline: "Εξασκηθείτε στην απόφαση. Ενισχύστε το ανθρώπινο επίπεδο. Ένα παιγνιώδες περιβάλλον εκπαίδευσης κυβερνοασφάλειας που καλλιεργεί πραγματικές δεξιότητες αναγνώρισης phishing — όχι απλώς ευαισθητοποίηση.",
+    foot_platform: "Πλατφόρμα", foot_company: "Οργανισμός",
+    foot_security: "Ασφάλεια και Ιδιωτικότητα",
+    foot_copy: "ZeroCrowd PhishGame. Καλύτερη ευαισθητοποίηση. Ισχυρότερες άμυνες.",
+    foot_motto: "Σκέψου · Ανάλυσε · Αποφάσισε · Μείνε ασφαλής"
+  }
+};
+
+/* ===================== i18n ===================== */
+var currentLang = 'en';
+/* Greek capitals must not carry accents (tonos). Strip the Greek diacritics
+   and upper-case, leaving Latin words (e.g. "Arena") upper-cased as CSS would. */
+var GREEK_ACCENT_MAP = {
+  'ά':'α','έ':'ε','ή':'η','ί':'ι','ό':'ο','ύ':'υ','ώ':'ω',
+  'Ά':'Α','Έ':'Ε','Ή':'Η','Ί':'Ι','Ό':'Ο','Ύ':'Υ','Ώ':'Ω',
+  'ΐ':'ι','ΰ':'υ','ϊ':'ι','ϋ':'υ','Ϊ':'Ι','Ϋ':'Υ'
+};
+function greekUpper(s){
+  return s.replace(/[άέήίόύώΆΈΉΊΌΎΏΐΰϊϋΪΫ]/g, function(c){ return GREEK_ACCENT_MAP[c] || c; }).toUpperCase();
+}
+
+function applyLang(lang){
+  var dict = I18N[lang] || I18N.en;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var key = el.getAttribute('data-i18n');
+    if (dict[key] === undefined) return;
+    if (el.tagName === 'META') { el.setAttribute('content', dict[key]); return; }
+    var val = dict[key];
+    // When the element renders in capitals and the language is Greek, output
+    // toneless uppercase (CSS `uppercase` alone keeps the accents in browsers).
+    if (lang === 'el') {
+      var tt = '';
+      try { tt = window.getComputedStyle(el).textTransform; } catch(e){}
+      if (tt === 'uppercase') val = greekUpper(val);
+    }
+    el.textContent = val;
   });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){
+    var key = el.getAttribute('data-i18n-ph');
+    if (dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el){
+    var key = el.getAttribute('data-i18n-title');
+    if (dict[key] !== undefined) { el.setAttribute('title', dict[key]); el.setAttribute('aria-label', dict[key]); }
+  });
+  document.getElementById('langEn').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('#mobileMenu .lang-switch button').forEach(function(b,i){
+    b.classList.toggle('active', (i === 0 ? 'en' : 'el') === lang);
+  });
+  document.getElementById('langEl').classList.toggle('active', lang === 'el');
+  updateTitle(lang);
+}
+function setLang(lang){
+  currentLang = (lang === 'el') ? 'el' : 'en';
+  try { localStorage.setItem('zc_lang', currentLang); } catch(e){}
+  applyLang(currentLang);
+}
+function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key; }
+
+/* ===================== ROUTER ===================== */
+var ROUTES = ['home','how-it-works','features','arena','educators','applications','contact'];
+function currentRoute(){
+  var h = (location.hash || '').replace(/^#\/?/, '').split('?')[0];
+  if (ROUTES.indexOf(h) === -1) h = 'home';
+  return h;
+}
+function updateTitle(lang){
+  var route = currentRoute();
+  var key = route === 'home' ? null : 'nav_' + route.replace(/-/g,'_').replace('how_it_works','how').replace('features','features');
+  var label = '';
+  if (route === 'how-it-works') label = t('nav_how');
+  else if (route === 'features') label = t('nav_features');
+  else if (route !== 'home') label = t('nav_' + route);
+  document.title = 'ZEROCROWD // PHISHGAME' + (label ? ' — ' + label : '');
+}
+function renderRoute(){
+  var route = currentRoute();
+  document.querySelectorAll('.page').forEach(function(p){
+    p.classList.toggle('active', p.getAttribute('data-page') === route);
+  });
+  // active states
+  document.querySelectorAll('[data-route]').forEach(function(a){
+    a.classList.toggle('active', a.getAttribute('data-route') === route);
+  });
+  var gameRoutes = ['how-it-works','features','arena'];
+  var dd = document.getElementById('gameDD');
+  if (dd) dd.classList.toggle('active', gameRoutes.indexOf(route) !== -1);
+  // mark the full-screen menu's game group label when on a sub-page
+  var gl = document.getElementById('mmGameLabel');
+  if (gl) gl.classList.toggle('active', gameRoutes.indexOf(route) !== -1);
+  window.scrollTo(0, 0);
+  closeMenu();
+  closeDropdown();
+  updateTitle(currentLang);
+}
+window.addEventListener('hashchange', renderRoute);
+
+/* desktop dropdown */
+function toggleDropdown(e){
+  e.stopPropagation();
+  document.getElementById('gameDD').classList.toggle('open');
+}
+function closeDropdown(){ var dd = document.getElementById('gameDD'); if (dd) dd.classList.remove('open'); }
+document.addEventListener('click', closeDropdown);
+
+/* full-screen mobile menu */
+function openMenu(){ document.getElementById('mobileMenu').classList.add('open'); document.body.classList.add('menu-open'); }
+function closeMenu(){ document.getElementById('mobileMenu').classList.remove('open'); document.body.classList.remove('menu-open'); }
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeMenu(); });
+
+/* ===================== init ===================== */
+document.getElementById('yr').textContent = new Date().getFullYear();
+(function initLang(){
+  var saved = null;
+  try { saved = localStorage.getItem('zc_lang'); } catch(e){}
+  if (saved !== 'en' && saved !== 'el') {
+    var nav = (navigator.language || 'en').toLowerCase();
+    saved = nav.indexOf('el') === 0 ? 'el' : 'en';
+  }
+  currentLang = saved;
+  applyLang(currentLang);
+})();
+renderRoute();
 </script>
 </body>
 </html>
